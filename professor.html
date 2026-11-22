@@ -1,0 +1,3457 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Batalla Lingüística – Pantalla del Professor (C2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0a0d1e;
+      --bg-card: rgba(22, 28, 58, 0.75);
+      --bg-card-border: rgba(255, 255, 255, 0.12);
+      --gold: #f5b041;
+      --gold-glow: rgba(245, 176, 65, 0.4);
+      --cyan: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.4);
+      --green: #00e676;
+      --green-glow: rgba(0, 230, 118, 0.4);
+      --red: #ff1744;
+      --purple: #7c4dff;
+      --text-main: #f0f4ff;
+      --text-muted: #8e9bb4;
+      --font-title: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1a1645 0%, #0c0e24 50%, #060714 100%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Ambient animated glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(124, 77, 255, 0.25) 0%, rgba(0, 229, 255, 0.08) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(60px);
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--bg-card-border);
+      background: rgba(10, 13, 30, 0.6);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 12px var(--gold-glow));
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #7c4dff, #00e5ff);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .session-pill {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--bg-card-border);
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .session-code-bold {
+      font-family: monospace;
+      font-size: 1.25rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+    }
+
+    .teams-count-badge {
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      color: var(--green);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Sound toggle */
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--bg-card-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    main {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .view-container {
+      width: 100%;
+      display: none;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .view-container.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold) 0%, #e67e22 100%);
+      color: #0c0e24;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 1.2rem;
+      padding: 16px 42px;
+      border: none;
+      border-radius: 35px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--gold-glow);
+      transition: all 0.25s ease;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(245, 176, 65, 0.6);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--bg-card-border);
+      color: var(--text-main);
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 12px 28px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* VIEW 1: INICI */
+    #view-inici {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 18px;
+      background: rgba(124, 77, 255, 0.2);
+      border: 1px solid rgba(124, 77, 255, 0.4);
+      color: #b388ff;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #ffffff 20%, #ffde59 50%, #ff9100 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 35px var(--gold-glow));
+    }
+
+    .hero-subtitle {
+      font-size: 1.35rem;
+      color: var(--text-muted);
+      max-width: 780px;
+      line-height: 1.6;
+      margin: 0 auto 40px auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 45px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      padding: 20px 14px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .feature-num {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 auto 10px auto;
+      font-weight: 800;
+      color: var(--cyan);
+      font-size: 0.9rem;
+    }
+
+    .feature-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* VIEW 2: LOBBY */
+    #view-lobby {
+      text-align: center;
+      width: 100%;
+    }
+
+    .lobby-header {
+      margin-bottom: 30px;
+    }
+
+    .lobby-code-card {
+      background: linear-gradient(145deg, rgba(22, 28, 58, 0.9), rgba(12, 16, 38, 0.9));
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 40px var(--cyan-glow);
+      border-radius: 28px;
+      padding: 30px 50px;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+
+    .lobby-code-label {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .lobby-code-text {
+      font-family: monospace;
+      font-size: 5rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 12px;
+      text-shadow: 0 0 20px var(--cyan);
+    }
+
+    .lobby-instructions {
+      font-size: 1.25rem;
+      color: var(--text-main);
+      margin-bottom: 35px;
+    }
+    .lobby-instructions strong {
+      color: var(--cyan);
+    }
+
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: 40px;
+      min-height: 140px;
+    }
+
+    .team-badge-card {
+      background: var(--bg-card);
+      border: 2px solid;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .team-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .team-info {
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .team-name {
+      font-family: var(--font-title);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .team-status {
+      font-size: 0.85rem;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .team-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulseDot 1.5s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .lobby-empty {
+      grid-column: 1 / -1;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+    }
+
+    /* VIEW 3: INTRO PROVA */
+    #view-intro {
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .intro-badge {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .intro-title {
+      font-family: var(--font-title);
+      font-size: 3.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 40%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .intro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 24px;
+      padding: 35px 45px;
+      margin-bottom: 35px;
+      backdrop-filter: blur(14px);
+      text-align: left;
+    }
+
+    .intro-desc {
+      font-size: 1.35rem;
+      line-height: 1.6;
+      color: #fff;
+      margin-bottom: 28px;
+    }
+
+    .intro-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .intro-meta-item {
+      text-align: center;
+    }
+
+    .intro-meta-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .intro-meta-val {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--cyan);
+    }
+
+    /* VIEW 4: PROVA EN CURS (TABÚ) */
+    #view-tabu {
+      width: 100%;
+    }
+
+    .tabu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .tabu-title-box {
+      text-align: left;
+    }
+
+    .tabu-sub {
+      color: var(--gold);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+    }
+
+    .tabu-main-title {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 900;
+    }
+
+    .turn-selector-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 18px;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 25px;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .turn-team-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tabu-arena {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 30px;
+      width: 100%;
+    }
+
+    .tabu-display-card {
+      background: var(--bg-card);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 28px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 420px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .tabu-card-badge {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .tabu-word-main {
+      font-family: var(--font-title);
+      font-size: 4.8rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 35px rgba(255, 215, 0, 0.4);
+      animation: wordPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes wordPop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .tabu-divider {
+      width: 70%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 23, 68, 0.5), transparent);
+      margin-bottom: 25px;
+    }
+
+    .tabu-prohibides-label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabu-prohibides-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tabu-prohibida-chip {
+      background: rgba(255, 23, 68, 0.12);
+      border: 1px solid rgba(255, 23, 68, 0.35);
+      color: #ff8a80;
+      padding: 10px 22px;
+      border-radius: 25px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabu-side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .timer-circle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 24px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-svg {
+      width: 150px;
+      height: 150px;
+      transform: rotate(-90deg);
+    }
+
+    .timer-bg-circle {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 10;
+    }
+
+    .timer-prog-circle {
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.9s linear, stroke 0.3s;
+    }
+
+    .timer-text-overlay {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-seconds-big {
+      font-family: var(--font-title);
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .tabu-stats-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 24px;
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.gold { color: var(--gold); }
+
+    /* VIEW 5: PREGUNTES (PROVES 2-5) */
+    #view-pregunta {
+      width: 100%;
+    }
+
+    .quiz-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .quiz-progress-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--bg-card-border);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 28px;
+      padding: 40px;
+      width: 100%;
+      margin-bottom: 28px;
+      backdrop-filter: blur(14px);
+      text-align: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .question-text {
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1.45;
+      color: #fff;
+    }
+
+    .question-highlight {
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 8px;
+      text-decoration-thickness: 3px;
+      text-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .option-letter {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .option-card.correct {
+      background: rgba(0, 230, 118, 0.2);
+      border-color: var(--green);
+      box-shadow: 0 0 25px var(--green-glow);
+    }
+    .option-card.correct .option-letter {
+      background: var(--green);
+      color: #0c0e24;
+    }
+
+    .option-card.incorrect {
+      background: rgba(255, 23, 68, 0.15);
+      border-color: var(--red);
+      opacity: 0.6;
+    }
+
+    /* Teams answer status tracker */
+    .answer-tracker-box {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .tracker-teams-list {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .team-status-chip {
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid;
+      transition: all 0.2s;
+    }
+
+    .team-status-chip.pending {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+    }
+
+    .team-status-chip.answered {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    .explanation-card {
+      width: 100%;
+      background: rgba(0, 230, 118, 0.1);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      border-radius: 20px;
+      padding: 22px 30px;
+      margin-bottom: 25px;
+      display: none;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    .explanation-title {
+      font-weight: 800;
+      color: var(--green);
+      margin-bottom: 6px;
+      font-size: 1.1rem;
+    }
+
+    .explanation-text {
+      font-size: 1.25rem;
+      line-height: 1.5;
+      color: #fff;
+    }
+
+    /* VIEW 6: CLASSIFICACIÓ PARCIAL I FINAL */
+    #view-leaderboard, #view-final {
+      width: 100%;
+      text-align: center;
+    }
+
+    .leaderboard-title {
+      font-family: var(--font-title);
+      font-size: 3.2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 40%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .leaderboard-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 35px;
+    }
+
+    /* Podium for Top 3 */
+    .podium-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 24px;
+      max-width: 850px;
+      margin: 0 auto 40px auto;
+      height: 320px;
+    }
+
+    .podium-slot {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .podium-team-header {
+      margin-bottom: 14px;
+      text-align: center;
+      animation: popIn 0.5s ease-out;
+    }
+
+    .podium-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0 auto 8px auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .podium-team-name {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .podium-points {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .podium-block {
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .podium-1 {
+      height: 200px;
+      background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+      color: #5c4300;
+      box-shadow: 0 0 40px var(--gold-glow);
+    }
+
+    .podium-2 {
+      height: 150px;
+      background: linear-gradient(180deg, #e0e0e0 0%, #757575 100%);
+      color: #212121;
+    }
+
+    .podium-3 {
+      height: 110px;
+      background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%);
+      color: #3e2723;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .leaderboard-row {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 18px;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s;
+    }
+
+    .leaderboard-row:hover {
+      transform: scale(1.01);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .leaderboard-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .rank-num {
+      font-family: var(--font-title);
+      font-size: 1.4rem;
+      font-weight: 900;
+      width: 38px;
+      text-align: center;
+    }
+
+    .leaderboard-team-title {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .leaderboard-points {
+      font-family: var(--font-title);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--cyan);
+    }
+
+    /* Confetti animation */
+    .confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 10;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Modal Editor Tabú */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 6, 18, 0.82);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-window {
+      background: linear-gradient(145deg, rgba(22, 28, 58, 0.98), rgba(12, 16, 38, 0.98));
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 45px var(--gold-glow);
+      border-radius: 28px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: var(--text-main);
+    }
+    .modal-header {
+      padding: 22px 30px;
+      border-bottom: 1px solid var(--bg-card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 13, 30, 0.5);
+    }
+    .modal-title {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--bg-card-border);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+    .modal-close-btn:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--bg-card-border);
+      background: rgba(10, 13, 30, 0.4);
+    }
+    .modal-tab-btn {
+      flex: 1;
+      padding: 14px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-title);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      background: rgba(245, 176, 65, 0.08);
+    }
+    .modal-body {
+      padding: 24px 30px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 18px 30px;
+      border-top: 1px solid var(--bg-card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 13, 30, 0.5);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .cards-editor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .card-edit-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .card-edit-main {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      min-width: 140px;
+    }
+    .card-edit-prohibides {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .card-edit-chip {
+      background: rgba(255, 23, 68, 0.15);
+      border: 1px solid rgba(255, 23, 68, 0.3);
+      color: #ff8a80;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .card-edit-del-btn {
+      background: rgba(255, 23, 68, 0.15);
+      border: 1px solid rgba(255, 23, 68, 0.3);
+      color: #ff5252;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .card-edit-del-btn:hover {
+      background: var(--red);
+      color: #fff;
+    }
+    .add-card-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .add-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .input-editor {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .input-editor:focus {
+      border-color: var(--cyan);
+    }
+    .textarea-bulk {
+      width: 100%;
+      height: 280px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 14px;
+      padding: 16px;
+      color: #fff;
+      font-family: monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+      outline: none;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    .textarea-bulk:focus {
+      border-color: var(--cyan);
+    }
+
+    .question-edit-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .question-edit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .question-edit-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .question-edit-opts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .question-edit-opt-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--bg-card-border);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .question-edit-opt-chip.correct {
+      background: rgba(0, 230, 118, 0.18);
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 700;
+    }
+    .question-edit-exp {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <header>
+    <div class="brand">
+      <span class="brand-icon">⚔️</span>
+      <h1 class="brand-title">La Batalla Lingüística</h1>
+      <span class="brand-badge">NIVELL C2</span>
+    </div>
+
+    <div class="header-status">
+      <div id="session-info-pill" class="session-pill" style="display: none;">
+        <span>Codi de partida:</span>
+        <span id="header-code" class="session-code-bold">------</span>
+      </div>
+      <div id="header-teams-count" class="teams-count-badge" style="display: none;">
+        0 equips
+      </div>
+      <button id="btn-open-tabu-editor" class="btn-icon" style="color: var(--gold); border-color: rgba(245, 176, 65, 0.4);" title="Personalitzar les paraules del Tabú">📝 Tabú (P1)</button>
+      <button id="btn-open-funcions-editor" class="btn-icon" style="color: var(--cyan); border-color: rgba(0, 229, 255, 0.4);" title="Personalitzar les oracions de Detectius de Funcions">🔍 Funcions (P3)</button>
+      <button id="btn-toggle-sound" class="btn-icon" title="Activa / Silencia el so">🔊 So Actiu</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- VIEW 1: INICI -->
+    <section id="view-inici" class="view-container active">
+      <div class="hero-badge">Concurs interactiu per equips</div>
+      <h2 class="hero-title">La Batalla Lingüística</h2>
+      <p class="hero-subtitle">
+        Posa a prova el domini de la llengua catalana (C2 / 2n de Batxillerat) amb cinc proves dinàmiques de nivell avançat.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-num">1</div>
+          <div class="feature-name">Paraules prohibides</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">2</div>
+          <div class="feature-name">Precisió lèxica</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">3</div>
+          <div class="feature-name">Detectius de funcions</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">4</div>
+          <div class="feature-name">Gimcana verbal</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-num">5</div>
+          <div class="feature-name">Judici lingüístic</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <button id="btn-crear-partida" class="btn-primary">
+          <span>🚀 CREAR NOVA PARTIDA</span>
+        </button>
+        <button id="btn-editor-tabu-inici" class="btn-secondary" style="color: var(--gold); border-color: rgba(245, 176, 65, 0.4); font-size: 1rem; padding: 12px 22px;">
+          <span>📝 Editar Tabú (P1)</span>
+        </button>
+        <button id="btn-editor-funcions-inici" class="btn-secondary" style="color: var(--cyan); border-color: rgba(0, 229, 255, 0.4); font-size: 1rem; padding: 12px 22px;">
+          <span>🔍 Editar Funcions (P3)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: LOBBY -->
+    <section id="view-lobby" class="view-container">
+      <div class="lobby-header">
+        <div class="lobby-code-card">
+          <div class="lobby-code-label">Codi de partida per als iPads</div>
+          <div id="lobby-code-display" class="lobby-code-text">------</div>
+        </div>
+        <p class="lobby-instructions">
+          Cada equip ha d'obrir l'enllaç de l'equip a l'iPad i introduir aquest codi: <strong id="lobby-code-strong">------</strong>
+        </p>
+      </div>
+
+      <div id="lobby-teams-grid" class="teams-grid">
+        <div class="lobby-empty">Esperant que els equips es connectin des dels seus iPads...</div>
+      </div>
+
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <button id="btn-comencar-joc" class="btn-primary" disabled>
+          <span>⚔️ COMENÇAR LA BATALLA</span>
+        </button>
+        <button id="btn-editor-tabu-lobby" class="btn-secondary" style="color: var(--gold); border-color: rgba(245, 176, 65, 0.4);">
+          <span>📝 Editar Tabú (P1)</span>
+        </button>
+        <button id="btn-editor-funcions-lobby" class="btn-secondary" style="color: var(--cyan); border-color: rgba(0, 229, 255, 0.4);">
+          <span>🔍 Editar Funcions (P3)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 3: INTRO DE PROVA -->
+    <section id="view-intro" class="view-container">
+      <div id="intro-badge" class="intro-badge">PROVA 1 DE 5</div>
+      <h2 id="intro-title" class="intro-title">Paraules Prohibides</h2>
+
+      <div class="intro-card">
+        <p id="intro-desc" class="intro-desc">
+          Descripció de la prova...
+        </p>
+        <div class="intro-meta-grid">
+          <div class="intro-meta-item">
+            <div class="intro-meta-label">Format</div>
+            <div id="intro-format" class="intro-meta-val">Tabú</div>
+          </div>
+          <div class="intro-meta-item">
+            <div class="intro-meta-label">Temps</div>
+            <div id="intro-temps" class="intro-meta-val">60 s</div>
+          </div>
+          <div class="intro-meta-item">
+            <div class="intro-meta-label">Puntuació</div>
+            <div id="intro-punts" class="intro-meta-val">10 pts / encert</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-iniciar-prova" class="btn-primary">
+        <span>INICIAR AQUESTA PROVA ▶</span>
+      </button>
+    </section>
+
+    <!-- VIEW 4: PROVA 1 (TABÚ EN CURS) -->
+    <section id="view-tabu" class="view-container">
+      <div class="tabu-header">
+        <div class="tabu-title-box">
+          <div class="tabu-sub">Prova 1: Tabú Lingüístic C2</div>
+          <h2 class="tabu-main-title">Paraules Prohibides</h2>
+        </div>
+        <div class="quiz-progress-pill" id="tabu-turn-indicator">
+          Torn de l'equip
+        </div>
+      </div>
+
+      <div class="turn-selector-bar">
+        <div class="turn-team-label">
+          <span>Equip actiu al projector:</span>
+          <select id="tabu-team-select" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--bg-card-border); padding: 8px 16px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; outline: none;">
+          </select>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-tabu-start-timer" class="btn-primary" style="padding: 10px 24px; font-size: 1rem;">
+            ⏱ INICIAR CRONÒMETRE
+          </button>
+          <button id="btn-tabu-finish-turn" class="btn-secondary">
+            SEGÜENT EQUIP
+          </button>
+        </div>
+      </div>
+
+      <div class="tabu-arena">
+        <div class="tabu-display-card">
+          <div class="tabu-card-badge">TARGETA TABÚ ACTIVA</div>
+          <div id="tabu-word" class="tabu-word-main">EFÍMER</div>
+          <div class="tabu-divider"></div>
+          <div class="tabu-prohibides-label">⚠️ PARAULES PROHIBIDES</div>
+          <div id="tabu-prohibides" class="tabu-prohibides-row">
+            <span class="tabu-prohibida-chip">❌ breu</span>
+            <span class="tabu-prohibida-chip">❌ curt</span>
+            <span class="tabu-prohibida-chip">❌ passatger</span>
+          </div>
+        </div>
+
+        <div class="tabu-side-panel">
+          <div class="timer-circle-card" style="position: relative;">
+            <svg class="timer-svg" viewBox="0 0 160 160">
+              <circle class="timer-bg-circle" cx="80" cy="80" r="70"></circle>
+              <circle id="tabu-timer-prog" class="timer-prog-circle" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="timer-text-overlay">
+              <span id="tabu-timer-text" class="timer-seconds-big">60</span>
+              <span class="timer-label">segons</span>
+            </div>
+          </div>
+
+          <div class="tabu-stats-card">
+            <div class="stat-row">
+              <span class="stat-label">Paraules encertades</span>
+              <span id="tabu-stat-encerts" class="stat-value green">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Paraules passades</span>
+              <span id="tabu-stat-passades" class="stat-value">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Punts acumulats</span>
+              <span id="tabu-stat-punts" class="stat-value gold">+0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: PREGUNTES (PROVES 2-5) -->
+    <section id="view-pregunta" class="view-container">
+      <div class="quiz-top-bar">
+        <div id="quiz-prova-name" class="tabu-sub" style="font-size: 1.1rem;">
+          PROVA 2: PRECISIÓ LÈXICA
+        </div>
+        <div id="quiz-question-counter" class="quiz-progress-pill">
+          Pregunta 1 de 10
+        </div>
+        <div style="position: relative; width: 60px; height: 60px;">
+          <svg style="width: 60px; height: 60px; transform: rotate(-90deg);" viewBox="0 0 60 60">
+            <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"></circle>
+            <circle id="quiz-timer-prog" cx="30" cy="30" r="26" fill="none" stroke="var(--cyan)" stroke-width="5" stroke-dasharray="163" stroke-dashoffset="0" stroke-linecap="round"></circle>
+          </svg>
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-title); font-weight: 800; font-size: 1.25rem;" id="quiz-timer-text">
+            30
+          </div>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div id="quiz-question-text" class="question-text">
+          Text de la pregunta aquí...
+        </div>
+      </div>
+
+      <div id="quiz-options-grid" class="options-grid">
+        <!-- Generat dinàmicament -->
+      </div>
+
+      <div class="answer-tracker-box">
+        <div style="font-size: 1rem; font-weight: 700; color: var(--text-muted);">
+          Estat de respostes dels equips:
+        </div>
+        <div id="quiz-teams-tracker" class="tracker-teams-list">
+          <!-- Chips d'equips -->
+        </div>
+      </div>
+
+      <div id="quiz-explanation-card" class="explanation-card">
+        <div class="explanation-title">💡 Explicació lingüística normatives:</div>
+        <div id="quiz-explanation-text" class="explanation-text">...</div>
+      </div>
+
+      <div style="display: flex; gap: 16px; justify-content: flex-end; width: 100%;">
+        <button id="btn-revelar-resposta" class="btn-secondary" style="display: none;">
+          MOSTRAR SOLUCIÓ
+        </button>
+        <button id="btn-seguent-pregunta" class="btn-primary" style="display: none;">
+          SEGÜENT PREGUNTA ▶
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 6: CLASSIFICACIÓ PARCIAL I PODIUM -->
+    <section id="view-leaderboard" class="view-container">
+      <div id="leaderboard-badge" class="hero-badge">RESULTATS DE LA PROVA</div>
+      <h2 id="leaderboard-title" class="leaderboard-title">Classificació General</h2>
+      <p id="leaderboard-sub" class="leaderboard-subtitle">Puntuació total actualitzada</p>
+
+      <div id="podium-area" class="podium-container">
+        <!-- Podium Top 3 generat dinàmicament -->
+      </div>
+
+      <div id="leaderboard-table-list" class="leaderboard-table">
+        <!-- Taula de tots els equips -->
+      </div>
+
+      <button id="btn-continuar-proxima-prova" class="btn-primary">
+        <span>CONTINUAR A LA SEGÜENT PROVA ➔</span>
+      </button>
+    </section>
+
+    <!-- VIEW 7: CLASSIFICACIÓ FINAL -->
+    <section id="view-final" class="view-container">
+      <div class="hero-badge" style="background: rgba(245,176,65,0.2); border-color: var(--gold); color: var(--gold);">
+        FI DE LA BATALLA LINGÜÍSTICA
+      </div>
+      <h2 class="leaderboard-title" style="font-size: 4rem;">🏆 EQUIP GUANYADOR 🏆</h2>
+      <p class="leaderboard-subtitle" style="font-size: 1.4rem;">Enhorabona a tots els equips pel gran nivell de català C2 demostrat!</p>
+
+      <div id="final-podium-area" class="podium-container" style="height: 360px;">
+        <!-- Podium final -->
+      </div>
+
+      <div id="final-table-list" class="leaderboard-table">
+        <!-- Taula final -->
+      </div>
+
+      <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+        <button id="btn-nova-partida" class="btn-primary">
+          🔄 COMENÇAR UNA ALTRA PARTIDA
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL GESTOR DE PARAULES TABÚ -->
+  <div id="modal-tabu-editor" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>📝</span>
+          <span>Personalització de Paraules Tabú (Prova 1)</span>
+        </div>
+        <button id="btn-close-modal-tabu" class="modal-close-btn" title="Tancar">✕</button>
+      </div>
+
+      <div class="modal-tabs">
+        <button id="tab-btn-visual" class="modal-tab-btn active">Targeta a Targeta</button>
+        <button id="tab-btn-text" class="modal-tab-btn">Enganxar llista de text (Ràpid)</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- PESTANYA 1: VISUAL -->
+        <div id="tab-content-visual">
+          <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px;">
+            Afegiu una nova paraula amb les 3 paraules prohibides:
+          </div>
+          <div class="add-card-grid">
+            <input type="text" id="new-tabu-word" class="input-editor" placeholder="Paraula clau (ex. METÀFORA)" style="text-transform: uppercase;">
+            <input type="text" id="new-tabu-p1" class="input-editor" placeholder="Prohibida 1">
+            <input type="text" id="new-tabu-p2" class="input-editor" placeholder="Prohibida 2">
+            <input type="text" id="new-tabu-p3" class="input-editor" placeholder="Prohibida 3">
+            <button id="btn-add-tabu-card" class="btn-primary" style="padding: 10px 18px; font-size: 0.9rem; border-radius: 10px;">
+              + Afegir
+            </button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <span style="font-weight: 700; color: #fff;">Llista de targetes actuals:</span>
+            <span id="tabu-cards-counter" style="color: var(--cyan); font-weight: 700;">25 targetes</span>
+          </div>
+
+          <div id="cards-editor-container" class="cards-editor-list">
+            <!-- Targetes generades dinàmicament -->
+          </div>
+        </div>
+
+        <!-- PESTANYA 2: TEXT BRUT -->
+        <div id="tab-content-text" style="display: none;">
+          <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            Podeu enganxar o escriure una llista directament. Una línia per cada paraula amb el format:<br>
+            <strong style="color: var(--cyan);">PARAULA: prohibida 1, prohibida 2, prohibida 3</strong>
+          </p>
+          <textarea id="tabu-bulk-textarea" class="textarea-bulk" placeholder="METÀFORA: comparació, figura, imatge
+HIPÈRBOLE: exageració, molt, extrem
+SINÈCDOQUE: part, tot, figura"></textarea>
+          <button id="btn-import-bulk-tabu" class="btn-secondary" style="margin-top: 10px; width: 100%;">
+            📥 Convertir text en targetes de Tabú
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-reset-default-tabu" class="btn-secondary" style="color: var(--red); border-color: rgba(255,23,68,0.4);">
+          🔄 Restablir paraules C2 originals
+        </button>
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-cancel-modal-tabu" class="btn-secondary">Cancel·lar</button>
+          <button id="btn-save-modal-tabu" class="btn-primary" style="padding: 12px 28px; font-size: 1rem;">
+            💾 DESAR I APLICAR
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GESTOR DE DETECTIUS DE FUNCIONS (PROVA 3) -->
+  <div id="modal-funcions-editor" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>🔍</span>
+          <span>Personalització de Detectius de Funcions (Prova 3)</span>
+        </div>
+        <button id="btn-close-modal-funcions" class="modal-close-btn" title="Tancar">✕</button>
+      </div>
+
+      <div class="modal-tabs">
+        <button id="tab-btn-funcions-visual" class="modal-tab-btn active">Oració a Oració</button>
+        <button id="tab-btn-funcions-text" class="modal-tab-btn">Enganxar llista de text (Ràpid)</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- PESTANYA 1: VISUAL -->
+        <div id="tab-content-funcions-visual">
+          <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+            Afegiu una oració. Poseu entre claudàtors <strong style="color: var(--gold);">[...]</strong> el fragment que els alumnes han d'analitzar.
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 18px; margin-bottom: 20px;">
+            <div style="margin-bottom: 12px;">
+              <label style="display:block; font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:6px;">ORACIÓ AMB SEGMENT [ENTRE CLAUDÀTORS]:</label>
+              <input type="text" id="new-funcio-frase" class="input-editor" style="width: 100%; font-size: 1.05rem;" placeholder="ex. La directora va convocar [els delegats de curs] a les deu.">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:4px;">OPCIÓ A:</label>
+                <input type="text" id="new-funcio-opt0" class="input-editor" style="width: 100%;" value="Subjecte">
+              </div>
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:4px;">OPCIÓ B:</label>
+                <input type="text" id="new-funcio-opt1" class="input-editor" style="width: 100%;" value="Complement directe">
+              </div>
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:4px;">OPCIÓ C:</label>
+                <input type="text" id="new-funcio-opt2" class="input-editor" style="width: 100%;" value="Complement indirecte">
+              </div>
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:4px;">OPCIÓ D:</label>
+                <input type="text" id="new-funcio-opt3" class="input-editor" style="width: 100%;" value="Complement de règim verbal">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 180px 1fr auto; gap: 12px; align-items: flex-end;">
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--green); margin-bottom:4px;">OPCIÓ CORRECTA:</label>
+                <select id="new-funcio-correcta" class="input-editor" style="width: 100%; background: #161c3a; color: #fff;">
+                  <option value="0">Opció A</option>
+                  <option value="1" selected>Opció B</option>
+                  <option value="2">Opció C</option>
+                  <option value="3">Opció D</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:4px;">EXPLICACIÓ LINGÜÍSTICA:</label>
+                <input type="text" id="new-funcio-exp" class="input-editor" style="width: 100%;" placeholder="ex. És CD: es pot substituir per «els» i admet passiva.">
+              </div>
+              <button id="btn-add-funcio-card" class="btn-primary" style="padding: 10px 20px; font-size: 0.9rem; border-radius: 10px; height: 42px;">
+                + Afegir
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 10px;">
+            <span style="font-weight: 700; color: #fff;">Oracions programades per a la Prova 3:</span>
+            <span id="funcions-cards-counter" style="color: var(--cyan); font-weight: 700;">6 oracions</span>
+          </div>
+
+          <div id="funcions-editor-container" class="cards-editor-list" style="max-height: 280px;">
+            <!-- Oracions generades dinàmicament -->
+          </div>
+        </div>
+
+        <!-- PESTANYA 2: TEXT BRUT -->
+        <div id="tab-content-funcions-text" style="display: none;">
+          <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            Podeu enganxar diverses oracions. Format recomanat (separat per barres verticals):<br>
+            <strong style="color: var(--cyan);">FRASE: El jurat va declarar [innocent] l'acusat. | OPCIONS: Atribut, Complement predicatiu, CD, Subjecte | CORRECTA: B | EXP: Concorda amb el CD.</strong>
+          </p>
+          <textarea id="funcions-bulk-textarea" class="textarea-bulk" placeholder="FRASE: Els alumnes es van mostrar [molt satisfets]. | OPCIONS: Predicatiu, Directe, Atribut, Manera | CORRECTA: C | EXP: Amb verb pseudocopulatiu funciona com a atribut.
+FRASE: La conferència va tractar [del canvi climàtic]. | OPCIONS: CI, CD, CRV, CN | CORRECTA: C | EXP: El verb tractar regeix la preposició de."></textarea>
+          <button id="btn-import-bulk-funcions" class="btn-secondary" style="margin-top: 10px; width: 100%;">
+            📥 Convertir text en oracions de la Prova 3
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-reset-default-funcions" class="btn-secondary" style="color: var(--red); border-color: rgba(255,23,68,0.4);">
+          🔄 Restablir oracions C2 originals
+        </button>
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-cancel-modal-funcions" class="btn-secondary">Cancel·lar</button>
+          <button id="btn-save-modal-funcions" class="btn-primary" style="padding: 12px 28px; font-size: 1rem;">
+            💾 DESAR I APLICAR
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>La Batalla Lingüística · Llengua Catalana C2 (2n de Batxillerat)</div>
+    <div id="system-time"></div>
+  </footer>
+
+  <script>
+    /* =====================================================================
+       WEB AUDIO SYNTHESIZER (No calen fitxers d'àudio externs)
+       ===================================================================== */
+    class AudioEffects {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+      playTone(freq, type, duration, gainVal = 0.15) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      correct() {
+        this.playTone(523.25, 'triangle', 0.15, 0.2); // C5
+        setTimeout(() => this.playTone(659.25, 'triangle', 0.25, 0.25), 100); // E5
+        setTimeout(() => this.playTone(783.99, 'triangle', 0.4, 0.3), 200); // G5
+      }
+      wrong() {
+        this.playTone(220, 'sawtooth', 0.2, 0.25);
+        setTimeout(() => this.playTone(185, 'sawtooth', 0.35, 0.25), 150);
+      }
+      tick() {
+        this.playTone(880, 'sine', 0.05, 0.08);
+      }
+      gong() {
+        this.playTone(330, 'sine', 1.2, 0.3);
+        this.playTone(165, 'triangle', 1.5, 0.4);
+      }
+      fanfare() {
+        const notes = [392, 523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 'triangle', 0.4, 0.25), idx * 120);
+        });
+      }
+    }
+    const audio = new AudioEffects();
+
+    /* =====================================================================
+       DADES DIDÀCTIQUES C2 COMPLETES
+       ===================================================================== */
+    const DEFAULT_TABU_CARDS = [
+      { paraula: "EFÍMER", prohibides: ["breu", "curt", "passatger"] },
+      { paraula: "PARADIGMA", prohibides: ["model", "exemple", "patró"] },
+      { paraula: "PROSÒDIA", prohibides: ["accent", "entonació", "ritme"] },
+      { paraula: "SINÈCDOQUE", prohibides: ["part", "tot", "figura"] },
+      { paraula: "PLEONASME", prohibides: ["redundància", "repetir", "sobrer"] },
+      { paraula: "DIGLÒSSIA", prohibides: ["llengua", "conflicte", "ús"] },
+      { paraula: "EUFEMISME", prohibides: ["suavitzar", "paraula", "tabú"] },
+      { paraula: "HIPÈRBATON", prohibides: ["ordre", "alterar", "sintaxi"] },
+      { paraula: "NEOLOGISME", prohibides: ["nou", "terme", "crear"] },
+      { paraula: "ARCAISME", prohibides: ["antic", "desús", "vell"] },
+      { paraula: "SOLECISME", prohibides: ["error", "frase", "sintaxi"] },
+      { paraula: "BARBARISME", prohibides: ["incorrecte", "estranger", "préstec"] },
+      { paraula: "PARONOMÀSIA", prohibides: ["semblant", "so", "mot"] },
+      { paraula: "ANÀFORA", prohibides: ["repetició", "inici", "vers"] },
+      { paraula: "LITOTES", prohibides: ["negar", "afirmar", "ironia"] },
+      { paraula: "METONÍMIA", prohibides: ["relació", "causa", "efecte"] },
+      { paraula: "HIPÈRBOLE", prohibides: ["exageració", "molt", "extrem"] },
+      { paraula: "PROSOPOPEIA", prohibides: ["persona", "inanimat", "atribuir"] },
+      { paraula: "ANACOLUT", prohibides: ["trencament", "coherència", "oració"] },
+      { paraula: "ASÍNDETON", prohibides: ["conjunció", "ometre", "comes"] },
+      { paraula: "POLISÍNDETON", prohibides: ["repetir", "i", "enllaç"] },
+      { paraula: "QUIASME", prohibides: ["creuar", "invertir", "simetria"] },
+      { paraula: "AL·LITERACIÓ", prohibides: ["consonant", "repetir", "so"] },
+      { paraula: "ANTONOMÀSIA", prohibides: ["qualitat", "propi", "arquetip"] },
+      { paraula: "ZEUGMA", prohibides: ["verb", "unir", "ometre"] }
+    ];
+
+    function getStoredTabuCards() {
+      try {
+        const saved = localStorage.getItem('batalla_tabu_cards');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_TABU_CARDS));
+    }
+
+    const DEFAULT_FUNCIONS_PREGUNTES = [
+      {
+        text: "El comitè organitzador va lliurar els guardons [als tres millors projectes].",
+        destacat: "als tres millors projectes",
+        opcions: ["Complement directe", "Complement indirecte", "Complement de règim verbal", "Complement circumstancial"],
+        correcta: 1,
+        explicacio: "«Als tres millors projectes» és el complement indirecte (CI), introduït per la preposició «a» davant del destinatari."
+      },
+      {
+        text: "Després de la deliberació, els representants es van mostrar [molt esperançats].",
+        destacat: "molt esperançats",
+        opcions: ["Complement predicatiu", "Complement directe", "Atribut", "Complement de manera"],
+        correcta: 2,
+        explicacio: "Amb el verb pseudocopulatiu «mostrar-se», el sintagma adjectival «molt esperançats» actua com a atribut."
+      },
+      {
+        text: "La investigació va tractar exclusivament [de la pèrdua de biodiversitat marina].",
+        destacat: "de la pèrdua de biodiversitat marina",
+        opcions: ["Complement indirecte", "Complement directe", "Complement de règim verbal", "Complement del nom"],
+        correcta: 2,
+        explicacio: "«De la pèrdua...» és complement de règim (CRV): el verb «tractar» exigeix la preposició «de»."
+      },
+      {
+        text: "La meteoròloga va anunciar [un descens pronunciat de les temperatures].",
+        destacat: "un descens pronunciat de les temperatures",
+        opcions: ["Subjecte", "Complement directe", "Atribut", "Complement predicatiu"],
+        correcta: 1,
+        explicacio: "«Un descens...» és complement directe (CD): es pot pronominalitzar per «l'» («el va anunciar») i passivitzar."
+      },
+      {
+        text: "El tribunal va declarar els dos acusats [culpables de sedició].",
+        destacat: "culpables de sedició",
+        opcions: ["Atribut", "Complement predicatiu", "Complement del nom", "Complement circumstancial"],
+        correcta: 1,
+        explicacio: "«Culpables de sedició» és complement predicatiu del CD: concorda en gènere i nombre amb «els dos acusats»."
+      },
+      {
+        text: "[A primera hora del matí], els operaris van reprendre les obres del tramvia.",
+        destacat: "A primera hora del matí",
+        opcions: ["Subjecte", "Complement circumstancial de temps", "Complement de règim", "Complement directe"],
+        correcta: 1,
+        explicacio: "«A primera hora del matí» és un complement circumstancial de temps (CCT) que situa l'acció."
+      }
+    ];
+
+    function getStoredFuncionsPreguntes() {
+      try {
+        const saved = localStorage.getItem('batalla_funcions_preguntes');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_FUNCIONS_PREGUNTES));
+    }
+
+    const DADES_JOC = {
+      proves: [
+        {
+          id: 1,
+          nom: "Paraules prohibides",
+          descripcio: "Un alumne de cada equip ha de fer endevinar una paraula clau als seus companys sense pronunciar cap de les tres paraules prohibides. Format Tabú tradicional.",
+          format: "Tabú oral",
+          temps: "60 s / equip",
+          punts: "10 pts / encert",
+          cards: getStoredTabuCards()
+        },
+        {
+          id: 2,
+          nom: "Precisió lèxica",
+          descripcio: "Trieu el terme més precís, culte i normatiu per a cadascun dels enunciats proposats de registre formal.",
+          format: "Preguntes tipus test (4 opcions)",
+          temps: "30 s / pregunta",
+          punts: "20 pts (+10 bonus rapidesa)",
+          preguntes: [
+            {
+              text: "El govern ha decidit _____ les noves mesures d'eficiència energètica abans de final d'any.",
+              opcions: ["posar", "implementar", "fer", "aplicar"],
+              correcta: 1,
+              explicacio: "«Implementar» és el verb precís que designa posar en funcionament sistemes, normes o mètodes planificats."
+            },
+            {
+              text: "El jutge va _____ l'acusat de tots els càrrecs per una manca evident de proves concloents.",
+              opcions: ["perdonar", "alliberar", "absoldre", "exculpar"],
+              correcta: 2,
+              explicacio: "«Absoldre» és el terme jurídic precís per dictar sentència favorable d'innocència a un acusat."
+            },
+            {
+              text: "La crisi econòmica ha _____ les desigualtats socials als barris metropolitans.",
+              opcions: ["augmentat", "agreujat", "empitjorat", "crescut"],
+              correcta: 1,
+              explicacio: "«Agreujar» expressa amb precisió que un estat o perjudici preexistent ha esdevingut més greu."
+            },
+            {
+              text: "La científica va _____ les teories negacionistes aportant dades empíriques irrefutables.",
+              opcions: ["negar", "contradir", "refutar", "desmentir"],
+              correcta: 2,
+              explicacio: "«Refutar» significa rebatre un argument o teoria mitjançant raonaments i demostracions sòlides."
+            },
+            {
+              text: "El claustre va _____ l'acord adoptat per la comissió de govern per àmplia majoria.",
+              opcions: ["acceptar", "ratificar", "aprovar", "validar"],
+              correcta: 1,
+              explicacio: "«Ratificar» és donar aprovació o confirmació formal i solemne a un acte o decisió ja presa."
+            },
+            {
+              text: "La nova legislació té per objectiu _____ els drets fonamentals de la infància.",
+              opcions: ["defensar", "salvaguardar", "guardar", "cuidar"],
+              correcta: 1,
+              explicacio: "«Salvaguardar» connota protegir de manera integral i preventiva contra qualsevol amenaça o deteriorament."
+            },
+            {
+              text: "L'astrofísic va _____ l'existència de matèria fosca per explicar les anomalies orbitals.",
+              opcions: ["inventar", "postular", "imaginar", "creure"],
+              correcta: 1,
+              explicacio: "«Postular» és establir o proposar un principi o hipòtesi sense demostració prèvia com a fonament teòric."
+            },
+            {
+              text: "El directori va _____ la seva renúncia formal al càrrec davant de la junta general.",
+              opcions: ["formalitzar", "donar", "presentar", "manifestar"],
+              correcta: 0,
+              explicacio: "«Formalitzar» és atorgar el requisit i la forma jurídica oficial a un tràmit o declaració de voluntat."
+            }
+          ]
+        },
+        {
+          id: 3,
+          nom: "Detectius de funcions",
+          descripcio: "Identifiqueu la funció sintàctica exacta del segment oracional destacat en cada enunciat.",
+          format: "Anàlisi sintàctica (4 opcions)",
+          temps: "35 s / pregunta",
+          punts: "20 pts / encert",
+          preguntes: getStoredFuncionsPreguntes()
+        },
+        {
+          id: 4,
+          nom: "Gimcana verbal",
+          descripcio: "Preguntes ràpides sobre morfologia verbal irregular, subjuntiu, participis i formes d'alta exigència normativa.",
+          format: "Tir ràpid (4 opcions)",
+          temps: "20 s / pregunta",
+          punts: "15 pts (+5 bonus < 8s)",
+          preguntes: [
+            {
+              text: "Conjugueu el verb «cabre» en 1a persona del singular del present d'indicatiu.",
+              opcions: ["cabo", "caibo", "cabeixo", "cabi"],
+              correcta: 0,
+              explicacio: "La forma normativa en català és «jo cabo» (mai *caibo)."
+            },
+            {
+              text: "Quin és el participi passat del verb «imprimir»?",
+              opcions: ["imprimit", "imprimut", "imprès", "imprit"],
+              correcta: 2,
+              explicacio: "El participi de tradició i preferència normativa és «imprès» (femení: «impresa»)."
+            },
+            {
+              text: "Indiqueu la 1a persona del singular del present d'indicatiu del verb «jeure».",
+              opcions: ["jago", "jec", "jaco", "jaigo"],
+              correcta: 1,
+              explicacio: "La forma normativa correcta és «jo jec» (i també «tu jaus, ell jau, nosaltres jaiem...»)."
+            },
+            {
+              text: "Quina és la 3a persona del singular del present de subjuntiu del verb «saber»?",
+              opcions: ["sàpia", "sàpiga", "sabi", "sapigués"],
+              correcta: 1,
+              explicacio: "La forma normativa del subjuntiu present és «que ell/a sàpiga»."
+            },
+            {
+              text: "Quina és la 1a persona del singular del condicional del verb «voler»?",
+              opcions: ["voleria", "voldria", "volguera", "voldrés"],
+              correcta: 1,
+              explicacio: "L'arrel del condicional adopta la consonant adventícia: «jo voldria»."
+            },
+            {
+              text: "Quin és el gerundi correcte del verb «tenir»?",
+              opcions: ["tenint", "tinguent", "tenent", "tinint"],
+              correcta: 0,
+              explicacio: "El gerundi normatiu és «tenint» (mentre que el participi és «tingut»)."
+            },
+            {
+              text: "Trieu la 3a persona del plural del present de subjuntiu del verb «poder».",
+              opcions: ["podin", "puguin", "poguin", "pudin"],
+              correcta: 1,
+              explicacio: "L'arrel del subjuntiu porta «u»: «que ells/elles puguin»."
+            },
+            {
+              text: "Com s'escriu la 3a persona del singular del present d'indicatiu de «dur»?",
+              opcions: ["du", "duu", "dug", "dueix"],
+              correcta: 1,
+              explicacio: "S'escriu normativament «ell duu» amb doble vocal «uu» per marcar la forma de present."
+            }
+          ]
+        },
+        {
+          id: 5,
+          nom: "Judici lingüístic",
+          descripcio: "Determineu si l'oració és correcta o incorrecta segons la normativa vigent (IEC). En cas d'error, s'haurà d'identificar el motiu.",
+          format: "Judici d'adequació normativa",
+          temps: "35 s / pregunta",
+          punts: "15 pts (+10 bonus justificació)",
+          preguntes: [
+            {
+              text: "«A la reunió d'ahir a la tarda hi havien més de cinquanta assistents.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 1,
+              explicacio: "El verb «haver-hi» amb sentit existencial és impersonal i sempre s'ha de conjugar en singular: «hi havia més de cinquanta...»."
+            },
+            {
+              text: "«Malgrat que plovia a bots i barrals, van decidir enfilar el camí de muntanya.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 1,
+              explicacio: "La locució *malgrat que és incorrecta (calc del castellà). Cal fer servir «tot i que», «encara que» o «malgrat la pluja»."
+            },
+            {
+              text: "«Aquest és l'informe tècnic del qual et vaig parlar la setmana passada.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 0,
+              explicacio: "L'oració és plenament correcta: relatiu compost amb preposició «del qual» referit a cosa amb concordança precisa."
+            },
+            {
+              text: "«Tinc que enllestir el treball d'investigació abans de divendres.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 1,
+              explicacio: "L'expressió d'obligació *tenir que és un castellanisme greu. Cal emprar «haver de + infinitiu» o «cal que + subjuntiu»."
+            },
+            {
+              text: "«Me'n recordo perfectament de la primera classe que vam fer junts.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 1,
+              explicacio: "Hi ha pleonasme pronominal incorrecte: el pronom «en» ja representa el complement introduït per «de». O bé «Me'n recordo» o bé «Recordo la primera classe»."
+            },
+            {
+              text: "«No sé pas si vindran a l'acte institucional d'obertura del curs.»",
+              opcions: ["Correcta", "Incorrecta"],
+              correcta: 0,
+              explicacio: "L'ús de la partícula «pas» és autèntic i normatiu com a element d'atenuació o reforç en oració negativa."
+            }
+          ]
+        }
+      ]
+    };
+
+    /* Colors per a equips */
+    const TEAM_COLORS = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+      '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
+    ];
+
+    /* =====================================================================
+       ESTAT GLOBAL DEL JOC
+       ===================================================================== */
+    const state = {
+      codi: null,
+      peer: null,
+      broadcast: null, // Canal local per a proves en el mateix navegador
+      connections: new Map(), // equipId -> PeerConnection
+      equips: [], // [{ id, nom, color, puntuacioTotal, puntuacioProva, answers: {} }]
+      provaIndex: 0, // 0..4
+      preguntaIndex: 0,
+      fase: 'inici', // inici, lobby, intro, tabu, pregunta, resultat_pregunta, leaderboard, final
+      respostesRebudes: new Map(), // equipId -> { resposta, temps, esCorrecta, punts }
+      timerInterval: null,
+      tempsRestant: 0,
+      tempsTotal: 0,
+      activeTabuTeamId: null,
+      tabuCardIndex: 0,
+      tabuEncerts: 0,
+      tabuPassades: 0
+    };
+
+    /* Elements DOM */
+    const views = {
+      inici: document.getElementById('view-inici'),
+      lobby: document.getElementById('view-lobby'),
+      intro: document.getElementById('view-intro'),
+      tabu: document.getElementById('view-tabu'),
+      pregunta: document.getElementById('view-pregunta'),
+      leaderboard: document.getElementById('view-leaderboard'),
+      final: document.getElementById('view-final')
+    };
+
+    function switchView(viewName) {
+      Object.keys(views).forEach(key => {
+        if (views[key]) views[key].classList.remove('active');
+      });
+      if (views[viewName]) {
+        views[viewName].classList.add('active');
+        state.fase = viewName;
+      }
+    }
+
+    /* Generar codi de partida aleatori de 6 caràcters */
+    function generateGameCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    /* =====================================================================
+       COMUNICACIÓ: PEERJS + BROADCASTCHANNEL DUAL
+       ===================================================================== */
+    function initHostNetwork(code) {
+      state.codi = code;
+      const peerId = `batalla-${code.toLowerCase()}`;
+
+      // 1. Canal Broadcast local per a proves instantànies en finestres locals
+      try {
+        state.broadcast = new BroadcastChannel(`batalla-channel-${code.toLowerCase()}`);
+        state.broadcast.onmessage = (event) => {
+          handleIncomingMessage(event.data, {
+            send: (msg) => state.broadcast.postMessage(msg)
+          });
+        };
+      } catch (e) {
+        console.warn("BroadcastChannel no disponible:", e);
+      }
+
+      // 2. PeerJS per a connexió entre dispositius reals (iPad <-> Projector)
+      try {
+        state.peer = new Peer(peerId, {
+          debug: 1,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:global.stun.twilio.com:3478' }
+            ]
+          }
+        });
+
+        state.peer.on('open', (id) => {
+          console.log("PeerJS Host actiu amb ID:", id);
+        });
+
+        state.peer.on('connection', (conn) => {
+          conn.on('open', () => {
+            conn.on('data', (data) => {
+              handleIncomingMessage(data, conn);
+            });
+          });
+          conn.on('close', () => {
+            console.log("Equip desconnectat:", conn.peer);
+          });
+        });
+
+        state.peer.on('error', (err) => {
+          console.warn("Avís de xarxa PeerJS:", err.type);
+        });
+      } catch (err) {
+        console.error("Error inicialitzant PeerJS:", err);
+      }
+    }
+
+    /* Enviar missatge a tots els equips */
+    function broadcastToTeams(message) {
+      // Per WebRTC PeerJS
+      state.connections.forEach((conn) => {
+        try {
+          if (conn && conn.open) {
+            conn.send(message);
+          }
+        } catch (e) {}
+      });
+
+      // Per BroadcastChannel
+      if (state.broadcast) {
+        try {
+          state.broadcast.postMessage(message);
+        } catch (e) {}
+      }
+    }
+
+    /* Tractament de missatges entrants des dels iPads */
+    function handleIncomingMessage(msg, sender) {
+      if (!msg || !msg.type) return;
+
+      switch (msg.type) {
+        case 'unir-se': {
+          const equipNom = (msg.nom || '').trim();
+          if (!equipNom) return;
+
+          let equip = state.equips.find(e => e.nom.toLowerCase() === equipNom.toLowerCase());
+          if (!equip) {
+            const nextIdx = state.equips.length;
+            const color = TEAM_COLORS[nextIdx % TEAM_COLORS.length];
+            const equipId = `eq_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+
+            equip = {
+              id: equipId,
+              nom: equipNom,
+              color: color,
+              puntuacioTotal: 0,
+              puntuacioProva: 0
+            };
+            state.equips.push(equip);
+          }
+
+          if (sender && sender.peer) {
+            state.connections.set(equip.id, sender);
+          }
+
+          // Resposta de confirmació
+          const resp = {
+            type: 'benvingut',
+            equipId: equip.id,
+            nom: equip.nom,
+            color: equip.color,
+            estatJoc: state.fase
+          };
+
+          try {
+            if (sender && typeof sender.send === 'function') {
+              sender.send(resp);
+            } else if (state.broadcast) {
+              state.broadcast.postMessage(resp);
+            }
+          } catch (e) {}
+
+          updateLobbyUI();
+          audio.tick();
+          break;
+        }
+
+        case 'tabu-accio': {
+          // Si l'iPad envia encert o passar en la prova de Tabú
+          if (state.fase === 'tabu' && state.activeTabuTeamId === msg.equipId) {
+            if (msg.accio === 'encert') {
+              state.tabuEncerts++;
+              audio.correct();
+              nextTabuCard();
+            } else if (msg.accio === 'passar') {
+              state.tabuPassades++;
+              audio.tick();
+              nextTabuCard();
+            } else if (msg.accio === 'finalitzar') {
+              finishTabuTurn();
+            }
+            updateTabuStatsUI();
+          }
+          break;
+        }
+
+        case 'resposta': {
+          // Rebre resposta a una pregunta
+          if (state.fase === 'pregunta') {
+            const { equipId, opcioIndex, temps } = msg;
+            if (!state.respostesRebudes.has(equipId)) {
+              state.respostesRebudes.set(equipId, {
+                opcioIndex: opcioIndex,
+                temps: temps || 0
+              });
+              audio.tick();
+              updateAnswerTrackerUI();
+
+              // Si tots els equips han respost, avançar automàticament
+              if (state.respostesRebudes.size >= state.equips.length && state.equips.length > 0) {
+                clearInterval(state.timerInterval);
+                setTimeout(() => revealAnswer(), 800);
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    /* =====================================================================
+       LÒGICA DEL LOBBY
+       ===================================================================== */
+    function startLobby() {
+      const code = generateGameCode();
+      initHostNetwork(code);
+
+      document.getElementById('header-code').textContent = code;
+      document.getElementById('session-info-pill').style.display = 'flex';
+      document.getElementById('header-teams-count').style.display = 'block';
+      document.getElementById('lobby-code-display').textContent = code;
+      document.getElementById('lobby-code-strong').textContent = code;
+
+      updateLobbyUI();
+      switchView('lobby');
+    }
+
+    function updateLobbyUI() {
+      const grid = document.getElementById('lobby-teams-grid');
+      const countBadge = document.getElementById('header-teams-count');
+      const btnStart = document.getElementById('btn-comencar-joc');
+
+      countBadge.textContent = `${state.equips.length} ${state.equips.length === 1 ? 'equip' : 'equips'}`;
+
+      if (state.equips.length === 0) {
+        grid.innerHTML = '<div class="lobby-empty">Esperant que els equips es connectin des dels seus iPads...</div>';
+        btnStart.disabled = true;
+      } else {
+        grid.innerHTML = state.equips.map(equip => `
+          <div class="team-badge-card" style="border-color: ${equip.color};">
+            <div class="team-avatar" style="background: ${equip.color};">
+              ${equip.nom.charAt(0).toUpperCase()}
+            </div>
+            <div class="team-info">
+              <div class="team-name">${equip.nom}</div>
+              <div class="team-status">
+                <span class="team-status-dot"></span> Connectat a l'iPad
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Habilita el botó si hi ha com a mínim 1 equip (idealment 2+)
+        btnStart.disabled = false;
+      }
+    }
+
+    /* =====================================================================
+       INTRODUCCIÓ DE PROVA
+       ===================================================================== */
+    function showIntroProva(provaIndex) {
+      state.provaIndex = provaIndex;
+      const prova = DADES_JOC.proves[provaIndex];
+
+      document.getElementById('intro-badge').textContent = `PROVA ${prova.id} DE 5`;
+      document.getElementById('intro-title').textContent = prova.nom;
+      document.getElementById('intro-desc').textContent = prova.descripcio;
+      document.getElementById('intro-format').textContent = prova.format;
+      document.getElementById('intro-temps').textContent = prova.temps;
+      document.getElementById('intro-punts').textContent = prova.punts;
+
+      // Resetejar puntuació parcial de la prova
+      state.equips.forEach(e => e.puntuacioProva = 0);
+
+      // Notificar als iPads la introducció
+      broadcastToTeams({
+        type: 'intro-prova',
+        provaNumero: prova.id,
+        nom: prova.nom,
+        descripcio: prova.descripcio,
+        temps: prova.temps
+      });
+
+      switchView('intro');
+      audio.fanfare();
+    }
+
+    /* =====================================================================
+       PROVA 1: PARAULES PROHIBIDES (TABÚ)
+       ===================================================================== */
+    function startTabuRound() {
+      switchView('tabu');
+      state.cardsShuffled = [...DADES_JOC.proves[0].cards].sort(() => Math.random() - 0.5);
+      state.tabuCardIndex = 0;
+
+      // Omplir el selector d'equips
+      const select = document.getElementById('tabu-team-select');
+      select.innerHTML = state.equips.map(e => `
+        <option value="${e.id}">${e.nom}</option>
+      `).join('');
+
+      select.onchange = (e) => {
+        setupActiveTabuTeam(e.target.value);
+      };
+
+      if (state.equips.length > 0) {
+        setupActiveTabuTeam(state.equips[0].id);
+      }
+    }
+
+    function setupActiveTabuTeam(equipId) {
+      state.activeTabuTeamId = equipId;
+      const equip = state.equips.find(e => e.id === equipId);
+      document.getElementById('tabu-turn-indicator').textContent = `Torn de: ${equip ? equip.nom : 'Equip'}`;
+      document.getElementById('tabu-team-select').value = equipId;
+
+      state.tabuEncerts = 0;
+      state.tabuPassades = 0;
+      updateTabuStatsUI();
+      displayTabuCard(state.tabuCardIndex);
+
+      // Reiniciar comptador visual
+      document.getElementById('tabu-timer-text').textContent = '60';
+      const circle = document.getElementById('tabu-timer-prog');
+      circle.style.strokeDashoffset = '0';
+      circle.style.stroke = 'var(--cyan)';
+    }
+
+    function displayTabuCard(index) {
+      const card = state.cardsShuffled[index % state.cardsShuffled.length];
+      const wordEl = document.getElementById('tabu-word');
+      const prohibidesEl = document.getElementById('tabu-prohibides');
+
+      wordEl.textContent = card.paraula;
+      prohibidesEl.innerHTML = card.prohibides.map(p => `
+        <span class="tabu-prohibida-chip">❌ ${p}</span>
+      `).join('');
+
+      // Enviar a l'iPad de l'equip actiu
+      broadcastToTeams({
+        type: 'tabu-card',
+        equipId: state.activeTabuTeamId,
+        paraula: card.paraula,
+        prohibides: card.prohibides,
+        encerts: state.tabuEncerts,
+        passades: state.tabuPassades
+      });
+    }
+
+    function nextTabuCard() {
+      state.tabuCardIndex++;
+      displayTabuCard(state.tabuCardIndex);
+    }
+
+    function updateTabuStatsUI() {
+      document.getElementById('tabu-stat-encerts').textContent = state.tabuEncerts;
+      document.getElementById('tabu-stat-passades').textContent = state.tabuPassades;
+      document.getElementById('tabu-stat-punts').textContent = `+${state.tabuEncerts * 10}`;
+    }
+
+    function startTabuTimer() {
+      clearInterval(state.timerInterval);
+      state.tempsTotal = 60;
+      state.tempsRestant = 60;
+
+      const circle = document.getElementById('tabu-timer-prog');
+      const text = document.getElementById('tabu-timer-text');
+      const totalDash = 440; // 2 * PI * 70
+
+      audio.gong();
+
+      // Notificar inici de cronòmetre als iPads
+      broadcastToTeams({
+        type: 'tabu-inici-torn',
+        equipId: state.activeTabuTeamId,
+        durada: 60
+      });
+
+      state.timerInterval = setInterval(() => {
+        state.tempsRestant--;
+        text.textContent = state.tempsRestant;
+
+        const offset = totalDash * (1 - (state.tempsRestant / state.tempsTotal));
+        circle.style.strokeDashoffset = offset;
+
+        if (state.tempsRestant <= 10) {
+          circle.style.stroke = 'var(--red)';
+          audio.tick();
+        }
+
+        if (state.tempsRestant <= 0) {
+          clearInterval(state.timerInterval);
+          finishTabuTurn();
+        }
+      }, 1000);
+    }
+
+    function finishTabuTurn() {
+      clearInterval(state.timerInterval);
+      audio.gong();
+
+      // Sumar punts a l'equip actiu (10 punts per encert)
+      const equip = state.equips.find(e => e.id === state.activeTabuTeamId);
+      if (equip) {
+        const punts = state.tabuEncerts * 10;
+        equip.puntuacioProva += punts;
+        equip.puntuacioTotal += punts;
+      }
+
+      broadcastToTeams({
+        type: 'tabu-fi-torn',
+        equipId: state.activeTabuTeamId,
+        encerts: state.tabuEncerts,
+        punts: state.tabuEncerts * 10
+      });
+
+      // Passar al següent equip o finalitzar la Prova 1
+      const currentIdx = state.equips.findIndex(e => e.id === state.activeTabuTeamId);
+      if (currentIdx + 1 < state.equips.length) {
+        setupActiveTabuTeam(state.equips[currentIdx + 1].id);
+      } else {
+        // Tots els equips han jugat el seu torn de tabú!
+        setTimeout(() => showLeaderboard(), 1200);
+      }
+    }
+
+    /* =====================================================================
+       PROVES 2-5: PREGUNTES TIPUS TEST I JUDICI
+       ===================================================================== */
+    function startQuestionRound() {
+      state.preguntaIndex = 0;
+      switchView('pregunta');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      clearInterval(state.timerInterval);
+      state.respostesRebudes.clear();
+
+      const prova = DADES_JOC.proves[state.provaIndex];
+      const pregunta = prova.preguntes[state.preguntaIndex];
+      const total = prova.preguntes.length;
+
+      document.getElementById('quiz-prova-name').textContent = `PROVA ${prova.id}: ${prova.nom.toUpperCase()}`;
+      document.getElementById('quiz-question-counter').textContent = `Pregunta ${state.preguntaIndex + 1} de ${total}`;
+
+      // Format text amb possible destacat
+      const textContainer = document.getElementById('quiz-question-text');
+      if (pregunta.destacat && pregunta.text.includes('[')) {
+        const parts = pregunta.text.split(/\[|\]/);
+        textContainer.innerHTML = `${parts[0]}<span class="question-highlight">${parts[1]}</span>${parts[2] || ''}`;
+      } else {
+        textContainer.textContent = pregunta.text;
+      }
+
+      // Generar opcions
+      const grid = document.getElementById('quiz-options-grid');
+      const letters = ['A', 'B', 'C', 'D'];
+      grid.innerHTML = pregunta.opcions.map((opc, idx) => `
+        <div class="option-card" id="option-${idx}">
+          <div class="option-letter">${letters[idx]}</div>
+          <div>${opc}</div>
+        </div>
+      `).join('');
+
+      // Ocultar explicació i botons
+      document.getElementById('quiz-explanation-card').style.display = 'none';
+      document.getElementById('btn-revelar-resposta').style.display = 'none';
+      document.getElementById('btn-seguent-pregunta').style.display = 'none';
+
+      updateAnswerTrackerUI();
+
+      // Durada de la pregunta segons la prova
+      state.tempsTotal = prova.id === 4 ? 20 : 30;
+      state.tempsRestant = state.tempsTotal;
+
+      const circle = document.getElementById('quiz-timer-prog');
+      const text = document.getElementById('quiz-timer-text');
+      circle.style.strokeDashoffset = '0';
+      circle.style.stroke = 'var(--cyan)';
+      text.textContent = state.tempsRestant;
+
+      // Enviar la pregunta als iPads
+      broadcastToTeams({
+        type: 'nova-pregunta',
+        provaId: prova.id,
+        index: state.preguntaIndex,
+        total: total,
+        text: pregunta.text,
+        destacat: pregunta.destacat,
+        opcions: pregunta.opcions,
+        temps: state.tempsTotal
+      });
+
+      // Iniciar compte enrere
+      state.timerInterval = setInterval(() => {
+        state.tempsRestant--;
+        text.textContent = state.tempsRestant;
+
+        const maxDash = 163; // 2 * PI * 26
+        const offset = maxDash * (1 - (state.tempsRestant / state.tempsTotal));
+        circle.style.strokeDashoffset = offset;
+
+        if (state.tempsRestant <= 6) {
+          circle.style.stroke = 'var(--red)';
+          audio.tick();
+        }
+
+        if (state.tempsRestant <= 0) {
+          clearInterval(state.timerInterval);
+          audio.gong();
+          revealAnswer();
+        }
+      }, 1000);
+    }
+
+    function updateAnswerTrackerUI() {
+      const container = document.getElementById('quiz-teams-tracker');
+      container.innerHTML = state.equips.map(equip => {
+        const responded = state.respostesRebudes.has(equip.id);
+        return `
+          <div class="team-status-chip ${responded ? 'answered' : 'pending'}" style="border-color: ${equip.color};">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${equip.color};"></span>
+            <span>${equip.nom}</span>
+            <span>${responded ? '✓' : '...'}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function revealAnswer() {
+      clearInterval(state.timerInterval);
+      const prova = DADES_JOC.proves[state.provaIndex];
+      const pregunta = prova.preguntes[state.preguntaIndex];
+
+      // Ressaltar opció correcta
+      document.querySelectorAll('.option-card').forEach((card, idx) => {
+        if (idx === pregunta.correcta) {
+          card.classList.add('correct');
+        } else {
+          card.classList.add('incorrect');
+        }
+      });
+
+      // Calcular punts per a cada equip
+      state.equips.forEach(equip => {
+        const ans = state.respostesRebudes.get(equip.id);
+        if (ans && ans.opcioIndex === pregunta.correcta) {
+          let punts = prova.id === 4 ? 15 : 20;
+          // Bonus de rapidesa
+          if (ans.temps <= (prova.id === 4 ? 8 : 10)) {
+            punts += (prova.id === 4 ? 5 : 10);
+          }
+          equip.puntuacioProva += punts;
+          equip.puntuacioTotal += punts;
+          ans.punts = punts;
+          ans.correcte = true;
+        } else {
+          if (ans) {
+            ans.punts = 0;
+            ans.correcte = false;
+          }
+        }
+      });
+
+      // Mostrar explicació
+      const expCard = document.getElementById('quiz-explanation-card');
+      const expText = document.getElementById('quiz-explanation-text');
+      expText.textContent = pregunta.explicacio;
+      expCard.style.display = 'block';
+
+      // Notificar la solució als iPads
+      broadcastToTeams({
+        type: 'resolucio-pregunta',
+        correcta: pregunta.correcta,
+        explicacio: pregunta.explicacio,
+        respostesEquips: Array.from(state.respostesRebudes.entries()).map(([eqId, d]) => ({
+          equipId: eqId,
+          correcte: d.correcte,
+          punts: d.punts
+        }))
+      });
+
+      audio.correct();
+      document.getElementById('btn-seguent-pregunta').style.display = 'inline-flex';
+    }
+
+    function nextQuestion() {
+      state.preguntaIndex++;
+      const prova = DADES_JOC.proves[state.provaIndex];
+      if (state.preguntaIndex < prova.preguntes.length) {
+        loadQuestion();
+      } else {
+        // Fi de la prova! Mostrar classificació
+        showLeaderboard();
+      }
+    }
+
+    /* =====================================================================
+       CLASSIFICACIÓ I PODIUM
+       ===================================================================== */
+    function showLeaderboard() {
+      // Ordenar equips per puntuació total descendent
+      state.equips.sort((a, b) => b.puntuacioTotal - a.puntuacioTotal);
+
+      const isFinal = (state.provaIndex >= DADES_JOC.proves.length - 1);
+
+      if (isFinal) {
+        showFinalScreen();
+        return;
+      }
+
+      switchView('leaderboard');
+      audio.fanfare();
+
+      document.getElementById('leaderboard-badge').textContent = `CLASSIFICACIÓ DESPRÉS DE LA PROVA ${state.provaIndex + 1}`;
+      document.getElementById('leaderboard-title').textContent = `Classificació General`;
+
+      // Render podium
+      renderPodium('podium-area', state.equips.slice(0, 3));
+      // Render table
+      renderLeaderboardTable('leaderboard-table-list', state.equips);
+
+      // Notificar als iPads
+      broadcastToTeams({
+        type: 'classificacio-parcial',
+        classificacio: state.equips.map((e, idx) => ({
+          posicio: idx + 1,
+          id: e.id,
+          nom: e.nom,
+          color: e.color,
+          puntsTotals: e.puntuacioTotal,
+          puntsProva: e.puntuacioProva
+        }))
+      });
+    }
+
+    function showFinalScreen() {
+      switchView('final');
+      audio.fanfare();
+      triggerConfetti();
+
+      renderPodium('final-podium-area', state.equips.slice(0, 3));
+      renderLeaderboardTable('final-table-list', state.equips);
+
+      broadcastToTeams({
+        type: 'fi-partida',
+        classificacio: state.equips.map((e, idx) => ({
+          posicio: idx + 1,
+          id: e.id,
+          nom: e.nom,
+          color: e.color,
+          puntsTotals: e.puntuacioTotal
+        }))
+      });
+    }
+
+    function renderPodium(containerId, top3) {
+      const container = document.getElementById(containerId);
+      if (!top3 || top3.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      const order = [1, 0, 2]; // 2n lloc, 1r lloc, 3r lloc
+      container.innerHTML = order.map(idx => {
+        const team = top3[idx];
+        if (!team) return '<div class="podium-slot"></div>';
+        const rank = idx + 1;
+        return `
+          <div class="podium-slot">
+            <div class="podium-team-header">
+              <div class="podium-avatar" style="background: ${team.color};">
+                ${rank === 1 ? '👑' : team.nom.charAt(0).toUpperCase()}
+              </div>
+              <div class="podium-team-name">${team.nom}</div>
+              <div class="podium-points">${team.puntuacioTotal} pts</div>
+            </div>
+            <div class="podium-block podium-${rank}">
+              ${rank}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderLeaderboardTable(containerId, teams) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = teams.map((team, idx) => `
+        <div class="leaderboard-row" style="border-left: 5px solid ${team.color};">
+          <div class="leaderboard-left">
+            <div class="rank-num" style="color: ${idx === 0 ? 'var(--gold)' : 'inherit'};">#${idx + 1}</div>
+            <div class="team-avatar" style="width:36px; height:36px; font-size:1rem; background:${team.color};">
+              ${team.nom.charAt(0).toUpperCase()}
+            </div>
+            <div class="leaderboard-team-title">${team.nom}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div style="font-size:0.95rem; color:var(--text-muted);">+${team.puntuacioProva} en aquesta prova</div>
+            <div class="leaderboard-points">${team.puntuacioTotal} pts</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* =====================================================================
+       CONFETTI CANVAS ANIMATION
+       ===================================================================== */
+    function triggerConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#f5b041', '#00e5ff', '#00e676', '#ff1744', '#7c4dff', '#ffffff'];
+
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 4,
+          vy: Math.random() * 5 + 3,
+          rot: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let animId;
+      const startTime = Date.now();
+
+      function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.rotSpeed;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        if (Date.now() - startTime < 6000) {
+          animId = requestAnimationFrame(update);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      update();
+    }
+
+    /* =====================================================================
+       EDITOR I GESTIÓ DE PARAULES TABÚ PERSONALITZADES
+       ===================================================================== */
+    let editorCardsList = [];
+
+    function openTabuEditor() {
+      editorCardsList = JSON.parse(JSON.stringify(DADES_JOC.proves[0].cards));
+      renderEditorCardsList();
+      updateBulkTextarea();
+      document.getElementById('modal-tabu-editor').classList.add('active');
+    }
+
+    function closeTabuEditor() {
+      document.getElementById('modal-tabu-editor').classList.remove('active');
+    }
+
+    function renderEditorCardsList() {
+      const container = document.getElementById('cards-editor-container');
+      const counter = document.getElementById('tabu-cards-counter');
+      counter.textContent = `${editorCardsList.length} ${editorCardsList.length === 1 ? 'targeta' : 'targetes'}`;
+
+      if (editorCardsList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 25px; color: var(--text-muted);">No hi ha targetes preparades. Afegiu-ne una o restabliu les originals!</div>';
+        return;
+      }
+
+      container.innerHTML = editorCardsList.map((card, idx) => `
+        <div class="card-edit-item">
+          <div class="card-edit-main">${card.paraula}</div>
+          <div class="card-edit-prohibides">
+            ${card.prohibides.map(p => `<span class="card-edit-chip">❌ ${p}</span>`).join('')}
+          </div>
+          <button class="card-edit-del-btn" onclick="removeEditorCard(${idx})" title="Eliminar aquesta targeta">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeEditorCard = function(idx) {
+      editorCardsList.splice(idx, 1);
+      renderEditorCardsList();
+      updateBulkTextarea();
+    };
+
+    function addEditorCardFromInputs() {
+      const wordInput = document.getElementById('new-tabu-word');
+      const p1Input = document.getElementById('new-tabu-p1');
+      const p2Input = document.getElementById('new-tabu-p2');
+      const p3Input = document.getElementById('new-tabu-p3');
+
+      const word = wordInput.value.trim().toUpperCase();
+      const p1 = p1Input.value.trim();
+      const p2 = p2Input.value.trim();
+      const p3 = p3Input.value.trim();
+
+      if (!word) {
+        alert("Introduïu la paraula principal del Tabú.");
+        return;
+      }
+      if (!p1 || !p2 || !p3) {
+        alert("Introduïu les tres paraules prohibides.");
+        return;
+      }
+
+      editorCardsList.unshift({
+        paraula: word,
+        prohibides: [p1, p2, p3]
+      });
+
+      wordInput.value = '';
+      p1Input.value = '';
+      p2Input.value = '';
+      p3Input.value = '';
+      wordInput.focus();
+
+      renderEditorCardsList();
+      updateBulkTextarea();
+      audio.tick();
+    }
+
+    function updateBulkTextarea() {
+      const area = document.getElementById('tabu-bulk-textarea');
+      area.value = editorCardsList.map(c => `${c.paraula}: ${c.prohibides.join(', ')}`).join('\n');
+    }
+
+    function importBulkText() {
+      const area = document.getElementById('tabu-bulk-textarea');
+      const lines = area.value.split('\n');
+      const parsed = [];
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const parts = trimmed.split(/[:\-–]/);
+        if (parts.length >= 2) {
+          const mainWord = parts[0].trim().toUpperCase();
+          const forbidden = parts[1].split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
+          if (mainWord && forbidden.length > 0) {
+            while (forbidden.length < 3) {
+              forbidden.push('---');
+            }
+            parsed.push({
+              paraula: mainWord,
+              prohibides: forbidden.slice(0, 3)
+            });
+          }
+        }
+      });
+
+      if (parsed.length === 0) {
+        alert("No s'ha pogut interpretar cap targeta. Assegureu-vos del format:\nPARAULA: prohibida1, prohibida2, prohibida3");
+        return;
+      }
+
+      editorCardsList = parsed;
+      renderEditorCardsList();
+      document.getElementById('tab-btn-visual').click();
+      audio.correct();
+      alert(`S'han importat ${parsed.length} targetes de Tabú amb èxit!`);
+    }
+
+    function saveTabuCards() {
+      if (editorCardsList.length === 0) {
+        alert("Cal que hi hagi com a mínim 1 targeta de Tabú.");
+        return;
+      }
+
+      DADES_JOC.proves[0].cards = JSON.parse(JSON.stringify(editorCardsList));
+      try {
+        localStorage.setItem('batalla_tabu_cards', JSON.stringify(editorCardsList));
+      } catch (e) {
+        console.warn("No s'ha pogut desar a localStorage:", e);
+      }
+
+      closeTabuEditor();
+      audio.correct();
+
+      if (state.fase === 'tabu') {
+        state.cardsShuffled = [...DADES_JOC.proves[0].cards].sort(() => Math.random() - 0.5);
+        state.tabuCardIndex = 0;
+        displayTabuCard(0);
+      }
+    }
+
+    function resetToDefaultTabu() {
+      if (confirm("Voleu restablir la llista original de 25 figures retòriques i conceptes de C2?")) {
+        editorCardsList = JSON.parse(JSON.stringify(DEFAULT_TABU_CARDS));
+        renderEditorCardsList();
+        updateBulkTextarea();
+        audio.tick();
+      }
+    }
+
+    /* =====================================================================
+       EDITOR I GESTIÓ DE DETECTIUS DE FUNCIONS (PROVA 3)
+       ===================================================================== */
+    let editorFuncionsList = [];
+
+    function openFuncionsEditor() {
+      editorFuncionsList = JSON.parse(JSON.stringify(DADES_JOC.proves[2].preguntes));
+      renderEditorFuncionsList();
+      updateBulkFuncionsTextarea();
+      document.getElementById('modal-funcions-editor').classList.add('active');
+    }
+
+    function closeFuncionsEditor() {
+      document.getElementById('modal-funcions-editor').classList.remove('active');
+    }
+
+    function renderEditorFuncionsList() {
+      const container = document.getElementById('funcions-editor-container');
+      const counter = document.getElementById('funcions-cards-counter');
+      counter.textContent = `${editorFuncionsList.length} ${editorFuncionsList.length === 1 ? 'oració' : 'oracions'}`;
+
+      if (editorFuncionsList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 25px; color: var(--text-muted);">No hi ha oracions configurades. Afegiu-ne una o restabliu les originals!</div>';
+        return;
+      }
+
+      const letters = ['A', 'B', 'C', 'D'];
+      container.innerHTML = editorFuncionsList.map((item, idx) => `
+        <div class="question-edit-item">
+          <div class="question-edit-header">
+            <div class="question-edit-text">
+              <span style="color:var(--cyan); font-weight:800; margin-right:6px;">${idx + 1}.</span>
+              ${item.text.replace(/\[(.*?)\]/g, '<span style="color:var(--gold); text-decoration:underline;">[$1]</span>')}
+            </div>
+            <button class="card-edit-del-btn" onclick="removeEditorFuncio(${idx})" title="Eliminar aquesta oració">🗑️</button>
+          </div>
+          <div class="question-edit-opts-grid">
+            ${item.opcions.map((opt, oIdx) => `
+              <div class="question-edit-opt-chip ${oIdx === item.correcta ? 'correct' : ''}">
+                <strong style="color:${oIdx === item.correcta ? 'var(--green)' : 'var(--cyan)'};">${letters[oIdx]}:</strong>
+                <span>${opt}</span>
+                ${oIdx === item.correcta ? ' ✓' : ''}
+              </div>
+            `).join('')}
+          </div>
+          ${item.explicacio ? `<div class="question-edit-exp">💡 <em>${item.explicacio}</em></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    window.removeEditorFuncio = function(idx) {
+      editorFuncionsList.splice(idx, 1);
+      renderEditorFuncionsList();
+      updateBulkFuncionsTextarea();
+    };
+
+    function addEditorFuncioFromInputs() {
+      const fraseInput = document.getElementById('new-funcio-frase');
+      const opt0 = document.getElementById('new-funcio-opt0').value.trim();
+      const opt1 = document.getElementById('new-funcio-opt1').value.trim();
+      const opt2 = document.getElementById('new-funcio-opt2').value.trim();
+      const opt3 = document.getElementById('new-funcio-opt3').value.trim();
+      const correcta = parseInt(document.getElementById('new-funcio-correcta').value);
+      const exp = document.getElementById('new-funcio-exp').value.trim();
+
+      const text = fraseInput.value.trim();
+      if (!text) {
+        alert("Introduïu el text de l'oració.");
+        return;
+      }
+      if (!opt0 || !opt1 || !opt2 || !opt3) {
+        alert("Cal omplir les 4 opcions (A, B, C i D).");
+        return;
+      }
+
+      let destacat = '';
+      const match = text.match(/\[(.*?)\]/);
+      if (match) {
+        destacat = match[1];
+      }
+
+      editorFuncionsList.push({
+        text: text,
+        destacat: destacat,
+        opcions: [opt0, opt1, opt2, opt3],
+        correcta: correcta,
+        explicacio: exp || 'Identificació de funció sintàctica.'
+      });
+
+      fraseInput.value = '';
+      document.getElementById('new-funcio-exp').value = '';
+      fraseInput.focus();
+
+      renderEditorFuncionsList();
+      updateBulkFuncionsTextarea();
+      audio.tick();
+    }
+
+    function updateBulkFuncionsTextarea() {
+      const area = document.getElementById('funcions-bulk-textarea');
+      const letters = ['A', 'B', 'C', 'D'];
+      area.value = editorFuncionsList.map(item => {
+        return `FRASE: ${item.text} | OPCIONS: ${item.opcions.join(', ')} | CORRECTA: ${letters[item.correcta]} | EXP: ${item.explicacio || ''}`;
+      }).join('\n');
+    }
+
+    function importBulkFuncionsText() {
+      const area = document.getElementById('funcions-bulk-textarea');
+      const lines = area.value.split('\n');
+      const parsed = [];
+      const letterMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, '1': 0, '2': 1, '3': 2, '4': 3 };
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        let frase = '', opcions = [], correcta = 0, exp = '';
+
+        const parts = trimmed.split('|');
+        parts.forEach(part => {
+          const pTrim = part.trim();
+          if (/^FRASE:/i.test(pTrim)) {
+            frase = pTrim.replace(/^FRASE:/i, '').trim();
+          } else if (/^OPCIONS?:/i.test(pTrim)) {
+            opcions = pTrim.replace(/^OPCIONS?:/i, '').split(/[,;]/).map(s => s.trim()).filter(Boolean);
+          } else if (/^CORRECTA?:/i.test(pTrim)) {
+            const cStr = pTrim.replace(/^CORRECTA?:/i, '').trim().toUpperCase();
+            correcta = letterMap[cStr] !== undefined ? letterMap[cStr] : 0;
+          } else if (/^EXP(?:LICACIÓ)?:/i.test(pTrim)) {
+            exp = pTrim.replace(/^EXP(?:LICACIÓ)?:/i, '').trim();
+          }
+        });
+
+        if (frase) {
+          while (opcions.length < 4) {
+            opcions.push(`Opció ${opcions.length + 1}`);
+          }
+          let destacat = '';
+          const match = frase.match(/\[(.*?)\]/);
+          if (match) destacat = match[1];
+
+          parsed.push({
+            text: frase,
+            destacat: destacat,
+            opcions: opcions.slice(0, 4),
+            correcta: (correcta >= 0 && correcta < 4) ? correcta : 0,
+            explicacio: exp || 'Identificació de funció sintàctica.'
+          });
+        }
+      });
+
+      if (parsed.length === 0) {
+        alert("No s'ha pogut interpretar cap oració. Reviseu el format d'exemple.");
+        return;
+      }
+
+      editorFuncionsList = parsed;
+      renderEditorFuncionsList();
+      document.getElementById('tab-btn-funcions-visual').click();
+      audio.correct();
+      alert(`S'han importat ${parsed.length} oracions amb èxit!`);
+    }
+
+    function saveFuncionsCards() {
+      if (editorFuncionsList.length === 0) {
+        alert("Cal que hi hagi com a mínim 1 oració per a la Prova 3.");
+        return;
+      }
+
+      DADES_JOC.proves[2].preguntes = JSON.parse(JSON.stringify(editorFuncionsList));
+      try {
+        localStorage.setItem('batalla_funcions_preguntes', JSON.stringify(editorFuncionsList));
+      } catch (e) {
+        console.warn("No s'ha pogut desar a localStorage:", e);
+      }
+
+      closeFuncionsEditor();
+      audio.correct();
+    }
+
+    function resetToDefaultFuncions() {
+      if (confirm("Voleu restablir les oracions sintàctiques C2 originals?")) {
+        editorFuncionsList = JSON.parse(JSON.stringify(DEFAULT_FUNCIONS_PREGUNTES));
+        renderEditorFuncionsList();
+        updateBulkFuncionsTextarea();
+        audio.tick();
+      }
+    }
+
+    /* =====================================================================
+       INTERACCIÓ D'USUARI I ESDEVENIMENTS
+       ===================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle de so
+      const btnSound = document.getElementById('btn-toggle-sound');
+      btnSound.addEventListener('click', () => {
+        audio.enabled = !audio.enabled;
+        btnSound.textContent = audio.enabled ? '🔊 So Actiu' : '🔇 Silenci';
+      });
+
+      // Obrir editor de Tabú (Prova 1)
+      const btnEditorNav = document.getElementById('btn-open-tabu-editor');
+      if (btnEditorNav) btnEditorNav.addEventListener('click', openTabuEditor);
+
+      const btnEditorInici = document.getElementById('btn-editor-tabu-inici');
+      if (btnEditorInici) btnEditorInici.addEventListener('click', openTabuEditor);
+
+      const btnEditorLobby = document.getElementById('btn-editor-tabu-lobby');
+      if (btnEditorLobby) btnEditorLobby.addEventListener('click', openTabuEditor);
+
+      // Obrir editor de Funcions (Prova 3)
+      const btnFuncionsNav = document.getElementById('btn-open-funcions-editor');
+      if (btnFuncionsNav) btnFuncionsNav.addEventListener('click', openFuncionsEditor);
+
+      const btnFuncionsInici = document.getElementById('btn-editor-funcions-inici');
+      if (btnFuncionsInici) btnFuncionsInici.addEventListener('click', openFuncionsEditor);
+
+      const btnFuncionsLobby = document.getElementById('btn-editor-funcions-lobby');
+      if (btnFuncionsLobby) btnFuncionsLobby.addEventListener('click', openFuncionsEditor);
+
+      // Controls del modal de Tabú
+      document.getElementById('btn-close-modal-tabu').addEventListener('click', closeTabuEditor);
+      document.getElementById('btn-cancel-modal-tabu').addEventListener('click', closeTabuEditor);
+      document.getElementById('btn-save-modal-tabu').addEventListener('click', saveTabuCards);
+      document.getElementById('btn-reset-default-tabu').addEventListener('click', resetToDefaultTabu);
+      document.getElementById('btn-add-tabu-card').addEventListener('click', addEditorCardFromInputs);
+      document.getElementById('btn-import-bulk-tabu').addEventListener('click', importBulkText);
+
+      // Controls del modal de Funcions (Prova 3)
+      document.getElementById('btn-close-modal-funcions').addEventListener('click', closeFuncionsEditor);
+      document.getElementById('btn-cancel-modal-funcions').addEventListener('click', closeFuncionsEditor);
+      document.getElementById('btn-save-modal-funcions').addEventListener('click', saveFuncionsCards);
+      document.getElementById('btn-reset-default-funcions').addEventListener('click', resetToDefaultFuncions);
+      document.getElementById('btn-add-funcio-card').addEventListener('click', addEditorFuncioFromInputs);
+      document.getElementById('btn-import-bulk-funcions').addEventListener('click', importBulkFuncionsText);
+
+      // Pestanyes del modal de Tabú
+      const tabVisual = document.getElementById('tab-btn-visual');
+      const tabText = document.getElementById('tab-btn-text');
+      const contentVisual = document.getElementById('tab-content-visual');
+      const contentText = document.getElementById('tab-content-text');
+
+      tabVisual.addEventListener('click', () => {
+        tabVisual.classList.add('active');
+        tabText.classList.remove('active');
+        contentVisual.style.display = 'block';
+        contentText.style.display = 'none';
+      });
+
+      tabText.addEventListener('click', () => {
+        tabText.classList.add('active');
+        tabVisual.classList.remove('active');
+        contentVisual.style.display = 'none';
+        contentText.style.display = 'block';
+        updateBulkTextarea();
+      });
+
+      // Pestanyes del modal de Funcions
+      const tabFuncionsVisual = document.getElementById('tab-btn-funcions-visual');
+      const tabFuncionsText = document.getElementById('tab-btn-funcions-text');
+      const contentFuncionsVisual = document.getElementById('tab-content-funcions-visual');
+      const contentFuncionsText = document.getElementById('tab-content-funcions-text');
+
+      tabFuncionsVisual.addEventListener('click', () => {
+        tabFuncionsVisual.classList.add('active');
+        tabFuncionsText.classList.remove('active');
+        contentFuncionsVisual.style.display = 'block';
+        contentFuncionsText.style.display = 'none';
+      });
+
+      tabFuncionsText.addEventListener('click', () => {
+        tabFuncionsText.classList.add('active');
+        tabFuncionsVisual.classList.remove('active');
+        contentFuncionsVisual.style.display = 'none';
+        contentFuncionsText.style.display = 'block';
+        updateBulkFuncionsTextarea();
+      });
+
+      // Crear partida
+      document.getElementById('btn-crear-partida').addEventListener('click', () => {
+        startLobby();
+      });
+
+      // Començar el joc des del lobby
+      document.getElementById('btn-comencar-joc').addEventListener('click', () => {
+        showIntroProva(0);
+      });
+
+      // Iniciar prova des de la pantalla d'intro
+      document.getElementById('btn-iniciar-prova').addEventListener('click', () => {
+        if (state.provaIndex === 0) {
+          startTabuRound();
+        } else {
+          startQuestionRound();
+        }
+      });
+
+      // Controls Tabú
+      document.getElementById('btn-tabu-start-timer').addEventListener('click', () => {
+        startTabuTimer();
+      });
+
+      document.getElementById('btn-tabu-finish-turn').addEventListener('click', () => {
+        finishTabuTurn();
+      });
+
+      // Controls Preguntes
+      document.getElementById('btn-revelar-resposta').addEventListener('click', () => {
+        revealAnswer();
+      });
+
+      document.getElementById('btn-seguent-pregunta').addEventListener('click', () => {
+        nextQuestion();
+      });
+
+      // Continuar a la següent prova des de la classificació parcial
+      document.getElementById('btn-continuar-proxima-prova').addEventListener('click', () => {
+        showIntroProva(state.provaIndex + 1);
+      });
+
+      // Nova partida
+      document.getElementById('btn-nova-partida').addEventListener('click', () => {
+        location.reload();
+      });
+
+      // Rellotge a peu de pàgina
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('system-time').textContent = now.toLocaleTimeString('ca-ES');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

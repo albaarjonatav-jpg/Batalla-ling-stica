@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>La Batalla Lingüística – iPad de l'Equip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0a0d1e;
+      --bg-card: rgba(22, 28, 58, 0.85);
+      --bg-card-border: rgba(255, 255, 255, 0.15);
+      --gold: #f5b041;
+      --cyan: #00e5ff;
+      --green: #00e676;
+      --red: #ff1744;
+      --orange: #ff9100;
+      --text-main: #f0f4ff;
+      --text-muted: #8e9bb4;
+      --team-color: #00e5ff;
+      --font-title: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 10%, #17133f 0%, #0c0e24 60%, #060714 100%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overscroll-behavior: none;
+    }
+
+    header {
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--bg-card-border);
+      background: rgba(10, 13, 30, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mini {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .connection-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #757575;
+    }
+    .status-dot.online {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .team-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--team-color);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .view-container {
+      width: 100%;
+      display: none;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .view-container.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Buttons */
+    .btn-touch {
+      min-height: 62px;
+      border-radius: 18px;
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.15s, filter 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-touch:active {
+      transform: scale(0.97);
+    }
+
+    .btn-touch:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--gold) 0%, #e67e22 100%);
+      color: #0c0e24;
+      box-shadow: 0 8px 20px rgba(245, 176, 65, 0.35);
+    }
+
+    /* VIEW 1: UNIR-SE */
+    #view-join {
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .join-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 28px;
+      padding: 35px 30px;
+      width: 100%;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .join-title {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 40%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .join-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 22px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .input-touch {
+      width: 100%;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 16px;
+      padding: 0 20px;
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-touch:focus {
+      border-color: var(--cyan);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .input-code {
+      font-family: monospace;
+      font-size: 2rem;
+      letter-spacing: 8px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 14px;
+      display: none;
+    }
+
+    /* VIEW 2: SALA D'ESPERA */
+    #view-waiting {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .waiting-card {
+      background: var(--bg-card);
+      border: 2px solid var(--team-color);
+      border-radius: 28px;
+      padding: 45px 35px;
+      width: 100%;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.2);
+    }
+
+    .team-avatar-big {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--team-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #0c0e24;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .waiting-team-name {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .waiting-badge {
+      display: inline-block;
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .pulse-ring {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 4px solid var(--cyan);
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .waiting-text {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* VIEW 3: INTRO DE PROVA */
+    #view-intro-team {
+      text-align: center;
+      max-width: 650px;
+    }
+
+    .intro-prova-box {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 28px;
+      padding: 40px;
+      width: 100%;
+    }
+
+    .intro-tag {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .intro-prova-title {
+      font-family: var(--font-title);
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+
+    .intro-prova-desc {
+      font-size: 1.2rem;
+      color: var(--text-main);
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    /* VIEW 4: TABÚ (PROVA 1) - LA PANTALLA CRUCIAL */
+    #view-tabu-player {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: calc(100vh - 80px);
+      padding: 10px 0;
+    }
+
+    .tabu-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0 10px 15px 10px;
+    }
+
+    .tabu-pill-stat {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--bg-card-border);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabu-timer-badge {
+      background: rgba(0, 229, 255, 0.15);
+      border: 2px solid var(--cyan);
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 900;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tabu-timer-badge.urgent {
+      border-color: var(--red);
+      background: rgba(255, 23, 68, 0.2);
+      color: var(--red);
+      animation: pulseAlert 0.8s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .tabu-card-container {
+      flex: 1;
+      width: 100%;
+      background: var(--bg-card);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      margin: 10px 0 20px 0;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .tabu-target-word {
+      font-family: var(--font-title);
+      font-size: clamp(3.2rem, 8vw, 5.5rem);
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 25px;
+      text-shadow: 0 0 30px rgba(245, 176, 65, 0.5);
+      line-height: 1.1;
+    }
+
+    .tabu-card-divider {
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 23, 68, 0.6), transparent);
+      margin-bottom: 24px;
+    }
+
+    .tabu-forbidden-header {
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tabu-forbidden-list {
+      display: flex;
+      flex-direction: row;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .tabu-forbidden-word {
+      background: rgba(255, 23, 68, 0.14);
+      border: 2px solid rgba(255, 23, 68, 0.45);
+      color: #ff8a80;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* Botons d'acció Tabú a sota */
+    .tabu-actions-row {
+      display: grid;
+      grid-template-columns: 1.6fr 1.2fr 0.9fr;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .btn-tabu-encert {
+      background: linear-gradient(135deg, #00e676 0%, #00b0ff 100%);
+      color: #0c0e24;
+      font-size: 1.35rem;
+      box-shadow: 0 8px 25px rgba(0, 230, 118, 0.4);
+    }
+
+    .btn-tabu-passar {
+      background: linear-gradient(135deg, #ff9100 0%, #ff5252 100%);
+      color: #fff;
+      font-size: 1.25rem;
+    }
+
+    .btn-tabu-acabar {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    /* VIEW 5: PREGUNTES (PROVES 2-5) */
+    #view-pregunta-team {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: calc(100vh - 90px);
+    }
+
+    .quiz-team-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .quiz-statement-card {
+      background: var(--bg-card);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 24px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .quiz-statement-text {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .quiz-highlight {
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    .quiz-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .btn-option-touch {
+      min-height: 72px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-option-touch:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-option-touch.selected {
+      border-color: var(--team-color);
+      background: rgba(0, 229, 255, 0.18);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+    }
+
+    .btn-option-touch.correct {
+      border-color: var(--green);
+      background: rgba(0, 230, 118, 0.22);
+    }
+
+    .btn-option-touch.wrong {
+      border-color: var(--red);
+      background: rgba(255, 23, 68, 0.2);
+      opacity: 0.6;
+    }
+
+    .option-letter-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .feedback-banner {
+      display: none;
+      padding: 16px;
+      border-radius: 18px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: 15px;
+      animation: fadeIn 0.3s forwards;
+    }
+    .feedback-banner.sent {
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+    }
+    .feedback-banner.correct {
+      background: rgba(0, 230, 118, 0.2);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+    .feedback-banner.wrong {
+      background: rgba(255, 23, 68, 0.2);
+      border: 1px solid var(--red);
+      color: #ff8a80;
+    }
+
+    /* VIEW 6: RESULTATS I CLASSIFICACIÓ */
+    #view-team-leaderboard, #view-team-final {
+      text-align: center;
+      max-width: 650px;
+    }
+
+    .leaderboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 28px;
+      padding: 35px 25px;
+      width: 100%;
+    }
+
+    .position-badge-big {
+      font-family: var(--font-title);
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .team-points-display {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-bottom: 25px;
+    }
+
+    .team-summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .summary-row {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <span style="font-size: 1.4rem;">⚔️</span>
+      <span class="brand-mini">La Batalla Lingüística</span>
+      <div id="conn-status" class="connection-badge">
+        <span id="conn-dot" class="status-dot"></span>
+        <span id="conn-text">Desconnectat</span>
+      </div>
+    </div>
+
+    <div id="header-team-pill" class="team-pill">
+      <span id="header-team-color-dot" style="display:inline-block; width:12px; height:12px; border-radius:50%;"></span>
+      <span id="header-team-nom">Nom Equip</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- VIEW 1: FORMULARI PER UNIR-SE -->
+    <section id="view-join" class="view-container active">
+      <div class="join-card">
+        <h2 class="join-title">Entra a la Batalla</h2>
+        <p class="join-sub">Introduïu el codi projectat a la pissarra i el nom del vostre equip.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="input-codi">Codi de Partida (6 lletres)</label>
+          <input type="text" id="input-codi" class="input-touch input-code" maxlength="6" placeholder="ex. AB3X9Z" autocomplete="off" autocorrect="off" autocapitalize="characters">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-nom">Nom de l'Equip (3-4 alumnes)</label>
+          <input type="text" id="input-nom" class="input-touch" placeholder="ex. Els Sintàctics, Pompeu Fabra..." maxlength="25">
+        </div>
+
+        <div id="join-error" class="error-msg"></div>
+
+        <button id="btn-unir-se" class="btn-touch btn-accent" style="width: 100%; margin-top: 10px;">
+          <span>🚀 UNIR-SE AL JOC</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: SALA D'ESPERA -->
+    <section id="view-waiting" class="view-container">
+      <div class="waiting-card">
+        <div id="waiting-avatar" class="team-avatar-big">A</div>
+        <h2 id="waiting-team-name" class="waiting-team-name">Nom de l'Equip</h2>
+        <div class="waiting-badge">✓ Equip connectat a la partida</div>
+        <div class="pulse-ring"></div>
+        <p class="waiting-text">
+          Tot a punt! Mireu la pantalla del professor. El joc començarà de seguida que tothom estigui connectat.
+        </p>
+      </div>
+    </section>
+
+    <!-- VIEW 3: INTRO DE PROVA -->
+    <section id="view-intro-team" class="view-container">
+      <div class="intro-prova-box">
+        <div id="team-intro-tag" class="intro-tag">PROVA 1 DE 5</div>
+        <h2 id="team-intro-title" class="intro-prova-title">Paraules Prohibides</h2>
+        <p id="team-intro-desc" class="intro-prova-desc">Descripció de la prova...</p>
+        <div class="waiting-badge" style="margin-bottom: 0;">
+          ⏱ Mireu la pantalla principal per començar!
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: PROVA 1 (TABÚ TRADICIONAL) -->
+    <section id="view-tabu-player" class="view-container">
+      <div class="tabu-top-bar">
+        <div class="tabu-pill-stat">
+          <span>Encertades:</span>
+          <span id="tabu-count-encert" style="color: var(--green); font-size: 1.4rem;">0</span>
+        </div>
+        <div id="tabu-timer-box" class="tabu-timer-badge">
+          60
+        </div>
+        <div class="tabu-pill-stat">
+          <span>Passades:</span>
+          <span id="tabu-count-pass" style="color: var(--orange); font-size: 1.4rem;">0</span>
+        </div>
+      </div>
+
+      <div class="tabu-card-container">
+        <div id="tabu-main-word" class="tabu-target-word">
+          PARAULA
+        </div>
+        <div class="tabu-card-divider"></div>
+        <div class="tabu-forbidden-header">
+          <span>⚠️ PARAULES PROHIBIDES (NO ES PODEN DIR!)</span>
+        </div>
+        <div id="tabu-forbidden-list" class="tabu-forbidden-list">
+          <span class="tabu-forbidden-word">❌ prohibida 1</span>
+          <span class="tabu-forbidden-word">❌ prohibida 2</span>
+          <span class="tabu-forbidden-word">❌ prohibida 3</span>
+        </div>
+      </div>
+
+      <div class="tabu-actions-row">
+        <button id="btn-tabu-encert" class="btn-touch btn-tabu-encert">
+          <span>✓ ENCERTADA (+10)</span>
+        </button>
+        <button id="btn-tabu-passar" class="btn-touch btn-tabu-passar">
+          <span>⏭ PASSAR</span>
+        </button>
+        <button id="btn-tabu-acabar" class="btn-touch btn-tabu-acabar">
+          <span>⏹ FINALITZAR</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 5: PREGUNTES (PROVES 2-5) -->
+    <section id="view-pregunta-team" class="view-container">
+      <div class="quiz-team-top">
+        <div class="tabu-pill-stat" id="quiz-question-idx">
+          Pregunta 1/10
+        </div>
+        <div id="quiz-countdown-badge" class="tabu-timer-badge">
+          30
+        </div>
+      </div>
+
+      <div class="quiz-statement-card">
+        <div id="quiz-team-statement" class="quiz-statement-text">
+          Text de la pregunta...
+        </div>
+      </div>
+
+      <div id="quiz-feedback-banner" class="feedback-banner"></div>
+
+      <div id="quiz-options-container" class="quiz-options-list">
+        <!-- Generat dinàmicament -->
+      </div>
+    </section>
+
+    <!-- VIEW 6: CLASSIFICACIÓ PARCIAL -->
+    <section id="view-team-leaderboard" class="view-container">
+      <div class="leaderboard-card">
+        <div class="intro-tag">RESULTATS DE LA PROVA</div>
+        <div id="team-rank-display" class="position-badge-big">#1</div>
+        <h2 id="team-summary-name" style="font-size: 2rem; margin-bottom: 8px;">El vostre equip</h2>
+        <div id="team-points-display" class="team-points-display">0 punts</div>
+
+        <div id="team-ranking-table" class="team-summary-list">
+          <!-- Taula amb la posició de tothom -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 7: CLASSIFICACIÓ FINAL -->
+    <section id="view-team-final" class="view-container">
+      <div class="leaderboard-card">
+        <div class="intro-tag" style="color: var(--gold);">🏆 FI DE LA BATALLA 🏆</div>
+        <div id="final-team-rank" class="position-badge-big">#1</div>
+        <h2 style="font-size: 2.2rem; margin-bottom: 8px;">Enhorabona!</h2>
+        <div id="final-team-points" class="team-points-display">0 punts</div>
+        <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.5;">
+          Mireu la pantalla gran del professor per a la celebració i el resum final de la partida!
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================================
+       WEB AUDIO SYNTHESIZER PER A L'IPAD
+       ===================================================================== */
+    class AudioEffects {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+      playTone(freq, type, duration, gainVal = 0.2) {
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      correct() {
+        this.playTone(587.33, 'triangle', 0.15, 0.2); // D5
+        setTimeout(() => this.playTone(880, 'triangle', 0.25, 0.25), 100); // A5
+      }
+      pass() {
+        this.playTone(350, 'sine', 0.12, 0.15);
+      }
+      tap() {
+        this.playTone(700, 'sine', 0.05, 0.1);
+      }
+    }
+    const audio = new AudioEffects();
+
+    /* =====================================================================
+       ESTAT DE L'IPAD
+       ===================================================================== */
+    const state = {
+      codi: '',
+      equipId: null,
+      nom: '',
+      color: '#00e5ff',
+      peer: null,
+      conn: null,
+      broadcast: null,
+      connected: false,
+      activeView: 'join',
+      preguntaActual: null,
+      haRespost: false,
+      tempsIniciPregunta: 0,
+      tabuTimerInterval: null,
+      quizTimerInterval: null
+    };
+
+    const views = {
+      join: document.getElementById('view-join'),
+      waiting: document.getElementById('view-waiting'),
+      intro: document.getElementById('view-intro-team'),
+      tabu: document.getElementById('view-tabu-player'),
+      pregunta: document.getElementById('view-pregunta-team'),
+      leaderboard: document.getElementById('view-team-leaderboard'),
+      final: document.getElementById('view-team-final')
+    };
+
+    function switchView(viewName) {
+      Object.keys(views).forEach(key => {
+        if (views[key]) views[key].classList.remove('active');
+      });
+      if (views[viewName]) {
+        views[viewName].classList.add('active');
+        state.activeView = viewName;
+      }
+    }
+
+    /* =====================================================================
+       XARXA I CONNEXIÓ (PeerJS + BroadcastChannel)
+       ===================================================================== */
+    function connectToHost(code, teamName) {
+      const cleanCode = code.trim().toLowerCase();
+      state.codi = cleanCode;
+      state.nom = teamName.trim();
+
+      const hostPeerId = `batalla-${cleanCode}`;
+
+      // 1. Provar canal BroadcastChannel (mateix equip/ordinador)
+      try {
+        state.broadcast = new BroadcastChannel(`batalla-channel-${cleanCode}`);
+        state.broadcast.onmessage = (event) => {
+          handleServerMessage(event.data);
+        };
+        // Enviar sol·licitud d'unió
+        state.broadcast.postMessage({
+          type: 'unir-se',
+          nom: state.nom
+        });
+      } catch (e) {
+        console.warn("BroadcastChannel error:", e);
+      }
+
+      // 2. PeerJS (Connexió remota entre iPad i Projector)
+      try {
+        state.peer = new Peer({
+          debug: 1,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:global.stun.twilio.com:3478' }
+            ]
+          }
+        });
+
+        state.peer.on('open', (id) => {
+          console.log("PeerJS client obert amb ID:", id);
+          state.conn = state.peer.connect(hostPeerId, { reliable: true });
+
+          state.conn.on('open', () => {
+            console.log("Connectat al professor!");
+            state.connected = true;
+            updateConnectionUI(true);
+
+            state.conn.send({
+              type: 'unir-se',
+              nom: state.nom
+            });
+          });
+
+          state.conn.on('data', (data) => {
+            handleServerMessage(data);
+          });
+
+          state.conn.on('close', () => {
+            state.connected = false;
+            updateConnectionUI(false);
+          });
+        });
+
+        state.peer.on('error', (err) => {
+          console.warn("PeerJS error:", err.type);
+        });
+
+      } catch (err) {
+        console.error("Error PeerJS:", err);
+      }
+
+      // Timeout per si triga
+      setTimeout(() => {
+        if (!state.connected && state.activeView === 'join') {
+          showError("Intentant connectar... Assegureu-vos que el professor té la partida creada amb aquest codi.");
+        }
+      }, 4000);
+    }
+
+    function sendToHost(data) {
+      if (state.conn && state.conn.open) {
+        state.conn.send(data);
+      }
+      if (state.broadcast) {
+        try {
+          state.broadcast.postMessage(data);
+        } catch (e) {}
+      }
+    }
+
+    function updateConnectionUI(online) {
+      const dot = document.getElementById('conn-dot');
+      const text = document.getElementById('conn-text');
+      if (online) {
+        dot.classList.add('online');
+        text.textContent = 'Connectat';
+      } else {
+        dot.classList.remove('online');
+        text.textContent = 'Desconnectat';
+      }
+    }
+
+    function showError(msg) {
+      const err = document.getElementById('join-error');
+      err.textContent = msg;
+      err.style.display = 'block';
+    }
+
+    /* =====================================================================
+       GESTIÓ DE MISSATGES DEL SERVIDOR / PROFESSOR
+       ===================================================================== */
+    function handleServerMessage(msg) {
+      if (!msg || !msg.type) return;
+
+      switch (msg.type) {
+        case 'benvingut': {
+          // Confirmació d'entrada acceptada
+          state.equipId = msg.equipId;
+          state.nom = msg.nom || state.nom;
+          state.color = msg.color || '#00e5ff';
+          state.connected = true;
+          updateConnectionUI(true);
+
+          // Configurar UI de l'equip
+          document.documentElement.style.setProperty('--team-color', state.color);
+          document.getElementById('header-team-pill').style.display = 'flex';
+          document.getElementById('header-team-nom').textContent = state.nom;
+          document.getElementById('header-team-color-dot').style.background = state.color;
+
+          document.getElementById('waiting-avatar').textContent = state.nom.charAt(0).toUpperCase();
+          document.getElementById('waiting-avatar').style.background = state.color;
+          document.getElementById('waiting-team-name').textContent = state.nom;
+
+          switchView('waiting');
+          break;
+        }
+
+        case 'intro-prova': {
+          // Introducció de nova prova
+          document.getElementById('team-intro-tag').textContent = `PROVA ${msg.provaNumero} DE 5`;
+          document.getElementById('team-intro-title').textContent = msg.nom;
+          document.getElementById('team-intro-desc').textContent = msg.descripcio;
+          switchView('intro');
+          break;
+        }
+
+        case 'tabu-card': {
+          // Actualització de targeta de tabú
+          if (msg.equipId === state.equipId) {
+            switchView('tabu');
+            document.getElementById('tabu-main-word').textContent = msg.paraula;
+            document.getElementById('tabu-count-encert').textContent = msg.encerts;
+            document.getElementById('tabu-count-pass').textContent = msg.passades;
+
+            const list = document.getElementById('tabu-forbidden-list');
+            list.innerHTML = msg.prohibides.map(p => `
+              <span class="tabu-forbidden-word">❌ ${p}</span>
+            `).join('');
+          } else {
+            // És el torn d'un altre equip! Mostrar sala d'espera
+            switchView('waiting');
+            document.getElementById('waiting-team-name').textContent = "Torn d'un altre equip";
+          }
+          break;
+        }
+
+        case 'tabu-inici-torn': {
+          if (msg.equipId === state.equipId) {
+            startTabuClientTimer(msg.durada || 60);
+          }
+          break;
+        }
+
+        case 'tabu-fi-torn': {
+          clearInterval(state.tabuTimerInterval);
+          if (msg.equipId === state.equipId) {
+            audio.correct();
+            switchView('waiting');
+            document.getElementById('waiting-team-name').textContent = `Torn finalitzat! (+${msg.punts} punts)`;
+          }
+          break;
+        }
+
+        case 'nova-pregunta': {
+          // Pregunta rebuda per a proves 2-5
+          setupQuestionView(msg);
+          break;
+        }
+
+        case 'resolucio-pregunta': {
+          // Mostrar solució de la pregunta
+          handleQuestionResolution(msg);
+          break;
+        }
+
+        case 'classificacio-parcial': {
+          // Mostrar la classificació provisional
+          renderTeamLeaderboard(msg.classificacio, false);
+          break;
+        }
+
+        case 'fi-partida': {
+          // Fi del concurs!
+          renderTeamLeaderboard(msg.classificacio, true);
+          break;
+        }
+      }
+    }
+
+    /* =====================================================================
+       PROVA 1: LÒGICA DE TABÚ (CLIENT IPAD)
+       ===================================================================== */
+    function startTabuClientTimer(duration) {
+      clearInterval(state.tabuTimerInterval);
+      let remaining = duration;
+      const badge = document.getElementById('tabu-timer-box');
+      badge.textContent = remaining;
+      badge.classList.remove('urgent');
+
+      state.tabuTimerInterval = setInterval(() => {
+        remaining--;
+        badge.textContent = remaining;
+        if (remaining <= 10) {
+          badge.classList.add('urgent');
+        }
+        if (remaining <= 0) {
+          clearInterval(state.tabuTimerInterval);
+        }
+      }, 1000);
+    }
+
+    /* =====================================================================
+       PROVES 2-5: PREGUNTES TIPUS TEST
+       ===================================================================== */
+    function setupQuestionView(data) {
+      clearInterval(state.quizTimerInterval);
+      state.haRespost = false;
+      state.preguntaActual = data;
+      state.tempsIniciPregunta = Date.now();
+
+      switchView('pregunta');
+
+      document.getElementById('quiz-question-idx').textContent = `Pregunta ${data.index + 1}/${data.total}`;
+      const statement = document.getElementById('quiz-team-statement');
+
+      if (data.destacat && data.text.includes('[')) {
+        const parts = data.text.split(/\[|\]/);
+        statement.innerHTML = `${parts[0]}<span class="quiz-highlight">${parts[1]}</span>${parts[2] || ''}`;
+      } else {
+        statement.textContent = data.text;
+      }
+
+      // Reiniciar banner de feedback
+      const feedback = document.getElementById('quiz-feedback-banner');
+      feedback.style.display = 'none';
+      feedback.className = 'feedback-banner';
+
+      // Renderitzar opcions
+      const letters = ['A', 'B', 'C', 'D'];
+      const container = document.getElementById('quiz-options-container');
+      container.innerHTML = data.opcions.map((opc, idx) => `
+        <button class="btn-option-touch" data-index="${idx}">
+          <div class="option-letter-badge">${letters[idx]}</div>
+          <div>${opc}</div>
+        </button>
+      `).join('');
+
+      // Escoltar clics a les opcions
+      document.querySelectorAll('.btn-option-touch').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (state.haRespost) return;
+          const idx = parseInt(btn.getAttribute('data-index'));
+          submitAnswer(idx, btn);
+        });
+      });
+
+      // Cronòmetre de la pregunta
+      let remaining = data.temps || 30;
+      const timerBadge = document.getElementById('quiz-countdown-badge');
+      timerBadge.textContent = remaining;
+      timerBadge.classList.remove('urgent');
+
+      state.quizTimerInterval = setInterval(() => {
+        remaining--;
+        timerBadge.textContent = remaining;
+        if (remaining <= 6) {
+          timerBadge.classList.add('urgent');
+        }
+        if (remaining <= 0) {
+          clearInterval(state.quizTimerInterval);
+        }
+      }, 1000);
+    }
+
+    function submitAnswer(idx, btnElement) {
+      state.haRespost = true;
+      audio.tap();
+
+      // Ressaltar opció triada
+      document.querySelectorAll('.btn-option-touch').forEach(b => b.classList.remove('selected'));
+      btnElement.classList.add('selected');
+
+      const tempsSegons = ((Date.now() - state.tempsIniciPregunta) / 1000).toFixed(1);
+
+      // Mostrar banner de resposta enviada
+      const banner = document.getElementById('quiz-feedback-banner');
+      banner.textContent = '✓ Resposta enviada! Esperant que acabi el temps...';
+      banner.className = 'feedback-banner sent';
+      banner.style.display = 'block';
+
+      // Enviar al professor
+      sendToHost({
+        type: 'resposta',
+        equipId: state.equipId,
+        opcioIndex: idx,
+        temps: parseFloat(tempsSegons)
+      });
+    }
+
+    function handleQuestionResolution(data) {
+      clearInterval(state.quizTimerInterval);
+
+      // Marcar opció correcta i incorrectes
+      document.querySelectorAll('.btn-option-touch').forEach(btn => {
+        const idx = parseInt(btn.getAttribute('data-index'));
+        if (idx === data.correcta) {
+          btn.classList.add('correct');
+        } else if (btn.classList.contains('selected')) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      // Saber si el meu equip ha encertat
+      const myResult = data.respostesEquips.find(r => r.equipId === state.equipId);
+      const banner = document.getElementById('quiz-feedback-banner');
+
+      if (myResult && myResult.correcte) {
+        audio.correct();
+        banner.textContent = `🎉 Resposta Correcta! (+${myResult.punts} punts)`;
+        banner.className = 'feedback-banner correct';
+      } else {
+        banner.textContent = '❌ Resposta Incorrecta o fora de temps (0 punts)';
+        banner.className = 'feedback-banner wrong';
+      }
+      banner.style.display = 'block';
+    }
+
+    /* =====================================================================
+       CLASSIFICACIÓ I RESULTATS
+       ===================================================================== */
+    function renderTeamLeaderboard(classificacio, isFinal = false) {
+      const myTeam = classificacio.find(e => e.id === state.equipId);
+      const myPos = myTeam ? myTeam.posicio : '-';
+      const myPoints = myTeam ? myTeam.puntsTotals : 0;
+
+      if (isFinal) {
+        document.getElementById('final-team-rank').textContent = `#${myPos}`;
+        document.getElementById('final-team-points').textContent = `${myPoints} punts totals`;
+        switchView('final');
+      } else {
+        document.getElementById('team-rank-display').textContent = `#${myPos}`;
+        document.getElementById('team-summary-name').textContent = state.nom;
+        document.getElementById('team-points-display').textContent = `${myPoints} punts`;
+
+        const list = document.getElementById('team-ranking-table');
+        list.innerHTML = classificacio.map(e => `
+          <div class="summary-row" style="border-left: 4px solid ${e.color}; ${e.id === state.equipId ? 'background: rgba(0,229,255,0.15);' : ''}">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family: var(--font-title); font-weight:900;">#${e.posicio}</span>
+              <span>${e.nom}</span>
+            </div>
+            <span style="font-weight:800; color:var(--cyan);">${e.puntsTotals} pts</span>
+          </div>
+        `).join('');
+
+        switchView('leaderboard');
+      }
+    }
+
+    /* =====================================================================
+       ESDEVENIMENTS D'INTERACCIÓ DE L'IPAD
+       ===================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Majúscules automàtiques al codi
+      const inputCodi = document.getElementById('input-codi');
+      inputCodi.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+      });
+
+      // Botó Unir-se
+      document.getElementById('btn-unir-se').addEventListener('click', () => {
+        const codi = inputCodi.value.trim();
+        const nom = document.getElementById('input-nom').value.trim();
+
+        if (codi.length < 4) {
+          showError("Introduïu un codi vàlid de partida.");
+          return;
+        }
+        if (!nom) {
+          showError("Introduïu el nom del vostre equip.");
+          return;
+        }
+
+        document.getElementById('join-error').style.display = 'none';
+        connectToHost(codi, nom);
+      });
+
+      // Botons de la Prova 1: Tabú
+      document.getElementById('btn-tabu-encert').addEventListener('click', () => {
+        audio.tap();
+        sendToHost({
+          type: 'tabu-accio',
+          equipId: state.equipId,
+          accio: 'encert'
+        });
+      });
+
+      document.getElementById('btn-tabu-passar').addEventListener('click', () => {
+        audio.pass();
+        sendToHost({
+          type: 'tabu-accio',
+          equipId: state.equipId,
+          accio: 'passar'
+        });
+      });
+
+      document.getElementById('btn-tabu-acabar').addEventListener('click', () => {
+        sendToHost({
+          type: 'tabu-accio',
+          equipId: state.equipId,
+          accio: 'finalitzar'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
